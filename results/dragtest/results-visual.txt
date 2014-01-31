@@ -1,0 +1,20 @@
+This .txt file is for visual use only.
+These results are for the "/home/esp01/code/tea/github/TEA//headers/header_dragtest.txt" run.
+Iterations complete after 52 runs at 1.0 atm and 2900.0K. Final computation:
+
+All units are in mol 
+ Species |     Initial x |       Final x |         Delta |    Final Abun 
+     H_g |  0.9990600000 |  0.0355785568 | -0.9634814432 | 6.8727499e-02
+     C_g |  0.0002489300 |  0.0000000001 | -0.0002489299 | 2.1485831e-10
+     N_g |  0.0000375520 |  0.0000000200 | -0.0000375320 | 3.8677449e-08
+     O_g |  0.0004693700 |  0.0000002797 | -0.0004690903 | 5.4021285e-07
+  H2_ref |  0.0000100000 |  0.4815739791 |  0.4815639791 | 9.3026188e-01
+    CO_g |  0.0000100000 |  0.0002680462 |  0.0002580462 | 5.1778791e-04
+   CH4_g |  0.0000100000 |  0.0000000006 | -0.0000099994 | 1.1389813e-09
+   H2O_g |  0.0000100000 |  0.0002210441 |  0.0002110441 | 4.2699342e-04
+  N2_ref |  0.0000100000 |  0.0000337484 |  0.0000237484 | 6.5192153e-05
+   NH3_g |  0.0000100000 |  0.0000000352 | -0.0000099648 | 6.7975012e-08
+
+               Initial Total Mol : 0.9998758520
+                 Final Total Mol : 0.5176757103
+             Change in Total Mol : -0.4822001417

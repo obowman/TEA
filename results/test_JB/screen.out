@@ -1,0 +1,107 @@
+
+jasmina@exo:/home/esp01/code/tea/github/TEA$ runatm.py JB_TEBS.dat test_JB False
+ 
+1
+ 38
+Precision of 1e-14 is satisfied.
+
+2
+ 30
+Precision of 1e-14 is satisfied.
+
+3
+ 30
+Precision of 1e-14 is satisfied.
+
+4
+ 52
+Maximum iteration reached, ending minimization.
+
+5
+ 28
+Precision of 1e-14 is satisfied.
+
+6
+ 24
+Precision of 1e-14 is satisfied.
+
+7
+ 52
+Maximum iteration reached, ending minimization.
+
+8
+ 52
+Maximum iteration reached, ending minimization.
+
+9
+ 52
+Maximum iteration reached, ending minimization.
+
+10
+ 52
+Maximum iteration reached, ending minimization.
+
+11
+ 52
+Maximum iteration reached, ending minimization.
+
+12
+ 52
+Maximum iteration reached, ending minimization.
+
+13
+Traceback (most recent call last):
+  File "/home/esp01/code/tea/github/TEA/iterate.py", line 147, in <module>
+    fin_iter = lg.lagrange(it_num, datadir, doprint, ini_iter2, fromatm, dex)
+  File "/home/esp01/code/tea/github/TEA/lagrange.py", line 140, in lagrange
+    pi_f = np.append(pi_f, [fsol[pi[m]]])
+TypeError: list indices must be integers, not Symbol
+
+14
+ 52
+Maximum iteration reached, ending minimization.
+
+15
+Traceback (most recent call last):
+  File "/home/esp01/code/tea/github/TEA/iterate.py", line 99, in <module>
+    ini_iter = lg.lagrange(it_num, datadir, doprint, fin_iter2, fromatm, dex)
+  File "/home/esp01/code/tea/github/TEA/lagrange.py", line 140, in lagrange
+    pi_f = np.append(pi_f, [fsol[pi[m]]])
+TypeError: list indices must be integers, not Symbol
+
+16
+ 52
+Maximum iteration reached, ending minimization.
+
+17
+Traceback (most recent call last):
+  File "/home/esp01/code/tea/github/TEA/iterate.py", line 99, in <module>
+    ini_iter = lg.lagrange(it_num, datadir, doprint, fin_iter2, fromatm, dex)
+  File "/home/esp01/code/tea/github/TEA/lagrange.py", line 140, in lagrange
+    pi_f = np.append(pi_f, [fsol[pi[m]]])
+TypeError: list indices must be integers, not Symbol
+
+18
+ 52
+Maximum iteration reached, ending minimization.
+
+19
+ 52
+Maximum iteration reached, ending minimization.
+
+20
+ 52
+Maximum iteration reached, ending minimization.
+
+21
+ 52
+Maximum iteration reached, ending minimization.
+
+22
+Traceback (most recent call last):
+  File "/home/esp01/code/tea/github/TEA/iterate.py", line 147, in <module>
+    fin_iter = lg.lagrange(it_num, datadir, doprint, ini_iter2, fromatm, dex)
+  File "/home/esp01/code/tea/github/TEA/lagrange.py", line 140, in lagrange
+    pi_f = np.append(pi_f, [fsol[pi[m]]])
+TypeError: list indices must be integers, not Symbol
+

@@ -1,0 +1,14 @@
+== This is the input created for the main pipeline.  Contains species list, a and b values per specie, temperature of system in K, and pressure of system in atm. ==
+1.0
+3090.0
+b 9.9917e-01 2.6893e-04 6.7552e-05 4.8937e-04
+H_g 1 0 0 0 -8.43888073593
+C_g 0 1 0 0 5.07423920776
+N_g 0 0 1 0 -3.24081159477
+O_g 0 0 0 1 -13.0311383762
+H2_ref 2 0 0 0 -20.9616687049
+CO_g 0 1 0 1 -34.2783640298
+CH4_g 4 1 0 0 -36.5347946019
+H2O_g 2 0 0 1 -39.4057017341
+N2_ref 0 0 2 0 -28.5049107386
+NH3_g 3 0 1 0 -33.9394127691

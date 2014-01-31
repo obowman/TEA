@@ -1,0 +1,20 @@
+This .txt file is for visual use only.
+These results are for the "/home/jasmina/TEA//headers/header_checkIterations100Precision40.txt" run.
+Iterations complete after 100 runs at 1.0 atm and 3090.0K. Final computation:
+
+All units are in mol 
+ Species |     Initial x |       Final x |         Delta |    Final Abun 
+     H_g |  0.9990600000 |  0.0647008185 | -0.9343591815 | 1.2156341e-01
+     C_g |  0.0002489300 |  0.0000000005 | -0.0002489295 | 8.9391230e-10
+     N_g |  0.0000375520 |  0.0000000699 | -0.0000374821 | 1.3141400e-07
+     O_g |  0.0004693700 |  0.0000011145 | -0.0004682555 | 2.0939644e-06
+  H2_ref |  0.0000100000 |  0.4670152230 |  0.4670052230 | 8.7745358e-01
+    CO_g |  0.0000100000 |  0.0002689293 |  0.0002589293 | 5.0527890e-04
+   CH4_g |  0.0000100000 |  0.0000000003 | -0.0000099997 | 5.0262362e-10
+   H2O_g |  0.0000100000 |  0.0002193263 |  0.0002093263 | 4.1208208e-04
+  N2_ref |  0.0000100000 |  0.0000337274 |  0.0000237274 | 6.3368810e-05
+   NH3_g |  0.0000100000 |  0.0000000273 | -0.0000099727 | 5.1334034e-08
+
+               Initial Total Mol : 0.9998758520
+                 Final Total Mol : 0.5322392368
+             Change in Total Mol : -0.4676366152

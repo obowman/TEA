@@ -1,0 +1,20 @@
+This .txt file is for visual use only.
+These results are for the "/home/esp01/code/tea/github/TEA-Rev//headers/header_NoNegTest.txt" run.
+Iterations complete after 52 runs at 1.0 atm and 2000.0K. Final computation:
+
+All units are in mol 
+ Species |     Initial x |       Final x |         Delta |    Final Abun 
+     H_g |  0.9990641420 |  0.0004764323 | -0.9985877098 | 9.5262148e-04
+     C_g |  0.0002489312 |  0.0000000000 | -0.0002489312 | 4.7358135e-15
+     N_g |  0.0000375525 |  0.0000000000 | -0.0000375525 | 4.7664446e-12
+     O_g |  0.0004693743 |  0.0000000000 | -0.0004693743 | 3.2867604e-11
+  H2_ref |  0.0000100000 |  0.4991278330 |  0.4991178330 | 9.9800106e-01
+    CO_g |  0.0000100000 |  0.0002687259 |  0.0002587259 | 5.3731473e-04
+   CH4_g |  0.0000100000 |  0.0000000865 | -0.0000099135 | 1.7299306e-07
+   H2O_g |  0.0000100000 |  0.0002206326 |  0.0002106326 | 4.4115264e-04
+  N2_ref |  0.0000100000 |  0.0000337042 |  0.0000237042 | 6.7391123e-05
+   NH3_g |  0.0000100000 |  0.0000001441 | -0.0000098559 | 2.8821557e-07
+
+               Initial Total Mol : 0.9998800000
+                 Final Total Mol : 0.5001275586
+             Change in Total Mol : -0.4997524414

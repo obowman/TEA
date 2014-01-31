@@ -1,0 +1,13 @@
+100
+1
+H_g 
+C_g 
+N_g 
+O_g 
+H2_ref 
+CO_g 
+CH4_g 
+H2O_g 
+N2_ref 
+NH3_g
+

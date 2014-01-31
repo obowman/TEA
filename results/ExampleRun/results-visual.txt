@@ -1,0 +1,20 @@
+This .txt file is for visual use only.
+These results are for the "/home/esp01/code/tea/github/TEA-Rev//headers/header_ExampleRun.txt" run.
+Iterations complete after 50 runs at 51.0344729 atm and 3500.0K. Final computation:
+
+All units are in mol 
+ Species |     Initial x |       Final x |         Delta |    Final Abun 
+     H_g |  0.0000100000 |  0.0266226185 |  0.0266126185 | 5.1889224e-02
+  H2_ref |  0.4992669557 |  0.4859396525 | -0.0133273032 | 9.4712815e-01
+   H2O_g |  0.0004395060 |  0.0004631624 |  0.0000236565 | 9.0273389e-04
+     N_g |  0.0000275706 |  0.0000000768 | -0.0000274938 | 1.4972394e-07
+    NH_g |  0.0000100000 |  0.0000000916 | -0.0000099084 | 1.7861870e-07
+    NO_g |  0.0000100000 |  0.0000000132 | -0.0000099868 | 2.5659917e-08
+  N2_ref |  0.0000100000 |  0.0000257656 |  0.0000157656 | 5.0218873e-05
+     O_g |  0.0000100000 |  0.0000004617 | -0.0000095383 | 8.9992287e-07
+    OH_g |  0.0000100000 |  0.0000145834 |  0.0000045834 | 2.8423979e-05
+  O2_ref |  0.0000100000 |  0.0000000002 | -0.0000099998 | 2.9441638e-10
+
+               Initial Total Mol : 0.4998040323
+                 Final Total Mol : 0.5130664259
+             Change in Total Mol : 0.0132623936

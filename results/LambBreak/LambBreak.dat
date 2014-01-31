@@ -1,0 +1,13 @@
+# This is a NO-USE pre-TEA atmosphere file.
+# TEA accepts a file in this format to produce 
+# abundances as a function of pressure and temperature.
+
+1, 2, 3, 4, 5, 6, 7, 8, 9, 0
+
+# FILLER STUFF HERE
+
+#FINDSPEC
+H_g H2_ref H2O_l-g N_g NH_g NO_g N2_ref O_g OH_g O2_ref
+
+#FINDTEA
+    Radius   Pressure    Temp        H_g     H2_ref    H2O_l-g        N_g       NH_g       NO_g     N2_ref        O_g       OH_g     O2_ref 
