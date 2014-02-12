@@ -138,8 +138,7 @@ for i in np.arange(n_JANAF):
         if ID_originals.has_key(outfile):
              print ID_originals[outfile], infile, outfile
              outfile = gdir + species[i, 0] + '_' + np.str(species[i,2]) + '_' + np.str(species[i,3]) + '.txt'
-             
-
+        
         else:
              ID_originals[outfile] = infile
 
@@ -163,6 +162,9 @@ for i in np.arange(n_JANAF):
         print 'this file is not included because pressure != 1bar ==>', infile
 
 file_list.close()
+
+
+
 
 
 
