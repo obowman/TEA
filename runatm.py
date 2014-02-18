@@ -21,9 +21,9 @@ runatm.py inputs/atm_dummy ExampleAtm.dat False
 # Will fill this in better later, but that's the bones of it!
 
 # ###### FUNCTION TODO:
-#      : Accept appropriate parameters
+#    X : Accept appropriate parameters
 #      : Negate need for writing files at all before end
-#      : Complete multi-run program!
+#    X : Complete multi-run program!
 
 import os
 import re
@@ -42,19 +42,23 @@ infile  = argv[1:][0]# + '.dat'
 desc    = argv[1:][1]
 doprint = literal_eval(argv[1:][2])
 
-# Set up locations of necessary scripts
+# Set up locations of necessary scripts and directories as well as bools and files
+save_headers = False
+save_outputs = False # NOTE: Must also have 'clean', 'nofile' as False in iterate.py
 cwd = os.getcwd() + '/'
 loc_readatm    = cwd + "readatm.py"
 loc_makeheader = cwd + "makeheader.py"
 loc_balance    = cwd + "balance.py"
 loc_iterate    = cwd + "iterate.py"
 loc_headerfile = cwd + "/headers/header_" + desc + ".txt"
+loc_outputs    = cwd + "/outputs/" + desc + "/"
+out_dir        = cwd + "/results/" + desc + "/"
+single_res     = ["results-machine-read.txt", "results-visual.txt"]
 
 n_runs, spec_list, radi_arr, pres_arr, temp_arr, atom_arr, end_head = ra.readatm(infile)
 
 # ######################### EVENTUALY LOOP THIS OVER n_runs!
 # WRITE OUTPUT ATM FILE ONCE, keep open to add new lines!
-out_dir = 'results/' + desc + '/'
 if not os.path.exists(out_dir): os.makedirs(out_dir)
 fout_name = out_dir + desc + '.dat'
 
@@ -86,27 +90,13 @@ for q in np.arange(n_runs)[1:]:
     radi = radi_arr[q]
     pres = pres_arr[q]
     temp = temp_arr[q]
-    #print(q, spec_list, \
-    #                           pres_arr, temp_arr, atom_arr, desc)
-    #p1 = Process(target = mah.makeatmheader, args=(q, spec_list, \
-    #                           pres_arr, temp_arr, atom_arr, desc))
     
-    #p1.start()
-    #p1.join() 
-        
-
-    #p2 = Process(target = subprocess.call, args = [loc_balance, loc_headerfile, desc, str(doprint)])
-    #p3 = Process(target = subprocess.call, args = [loc_iterate, loc_headerfile, desc, str(doprint)])
-    
+    # Produce header for single lien of file, run balace and iterate
     mah.makeatmheader(q, spec_list, \
                               pres_arr, temp_arr, atom_arr, desc)
-    subprocess.call([loc_balance, loc_headerfile, desc, str(doprint)])
-    subprocess.call([loc_iterate, loc_headerfile, desc, str(doprint)])
-     
-    #p2.start()
-    #p2.join()
-    #p3.start()
-    #p3.join()
+    #print(loc_balance, loc_iterate)
+    subprocess.call([loc_balance, loc_headerfile, desc, str(doprint)], shell=True)
+    subprocess.call([loc_iterate, loc_headerfile, desc, str(doprint)], shell=True)
     
     header, it_num, speclist, y, x, delta, y_bar, x_bar, delta_bar = form.readoutput('results/' + desc + '/results-machine-read.txt')
     
@@ -118,7 +108,46 @@ for q in np.arange(n_runs)[1:]:
         fout.write('%1.4e'%cur_abn + ' ')
     
     fout.write('\n')
-
+    
+    # ### Perserve or delete intermediate files
+    # Save / remove headers
+    if save_headers:
+        old_name = loc_headerfile
+        new_name = loc_headerfile[0:-4] + "_" + '%.0f'%float(temp) + "K" + loc_headerfile[-4::]
+        if os.path.isfile(new_name):
+            os.remove(new_name)
+        os.rename(old_name, new_name)
+    else:
+        old_name = loc_headerfile
+        os.remove(old_name)
+    
+    # Save / remove lagrange.py / lambdacorr.py outputs
+    if save_outputs:
+        # Intermediate files
+        old_name = loc_outputs
+        new_name = loc_outputs[0:-1] + "_" + '%.0f'%float(temp) + "K" + loc_outputs[-1::]
+        if os.path.exists(new_name):
+            for file in os.listdir(new_name):
+                os.remove(new_name + file)
+            os.rmdir(new_name)
+        os.rename(old_name, new_name)
+        # Single-TP result files
+        single_dir =  out_dir + "singles_" + '%.0f'%float(temp) + "K" + "/"
+        if not os.path.exists(single_dir): os.makedirs(single_dir)
+        for file in single_res:
+            if os.path.isfile(single_dir + file):
+                os.remove(single_dir + file)
+            os.rename(out_dir + file, single_dir + file) 
+    else:
+        # Intermediate files
+        old_name = loc_outputs
+        for file in os.listdir(old_name):
+            os.remove(old_name + file)
+        os.rmdir(old_name)
+        # Single-TP result files
+        for file in single_res:
+            os.remove(out_dir + file)
 
 fout.close()
 
+# End of file

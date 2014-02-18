@@ -22,16 +22,19 @@ dex      = False      # Read as fromatm, dex values, log_10(counts)
 massfrac = False     # Read as mass fraction
 molefrac = False     # Read as mole fraction
 
+# ### 
 # Clean will remove files after use, but still create them to read/write 
-# between iterations.  To stop use of files all together, use nofile.
-# Note that speed increases if nofile is used, and multiple temp / pressure
-# values will ONLY run with nofile.
-# To read from atm file instead of header, set fromatm = True.  This is the only way
-# run TEA over a list of T/P points
+#  between iterations.  To stop use of files all together, use nofile.
+#  Note that speed increases if nofile is used, and multiple temp / pressure
+#  values will ONLY run with nofile.
+#  To read from atm file instead of header, set fromatm = True.  This is the only way
+#  run TEA over a list of T/P points
+# Note: if running runatm.py and you want to conserve all files, set 'clean'
+#  and 'nofile' to False
 clean   = True
 nofile  = True
 fromatm = False
-maxiter = 100 # Iteration to stop at
+maxiter = 2 # Iteration to stop at
 exp     = 40  # Precision in decimal places required for completion
 # Above 9 on linux will loop forever?
 # Up to 14 due to float constraints

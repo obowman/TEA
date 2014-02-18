@@ -3,11 +3,11 @@
 
 #print('Lagrange imports...')
 import numpy as np
-from sys import argv
+#from sys import argv
 from sympy.core import Symbol
 from sympy.solvers import solve
 import os
-os.environ['OMP_NUM_THREADS']='10'
+#os.environ['OMP_NUM_THREADS']='10'
 import format as form
 
 
