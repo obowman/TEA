@@ -9,8 +9,6 @@ python balance.py full_White2.txt testing2 True
 '''
 # How abundances are read;
 dex      = False
-massfrac = False
-molefrac = False
 fromatm  = False
 
 #print('Balance imports...')
@@ -21,9 +19,7 @@ from sympy.core import Symbol
 from sympy.solvers import solve
 import os
 
-
 import format as form
-
 
 # ### Header file name is from shell input
 header  = argv[1:][0]
@@ -46,13 +42,6 @@ pressure, temp, i, j, speclist, a, b, c = form.readheader(header, fromatm, dex)
 # FINDME
 if doprint:
     print("b values: " + str(b))
-
-if molefrac:
-    print("Not yet functional")
-
-if massfrac:
-    print("Not yet functional")
-
 
 # ### Set initial values of all but 'j' y_initial values to 'scale' moles
 # This actual number is arbitrary; after iterations, solution will converge regardless 

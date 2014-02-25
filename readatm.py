@@ -1,4 +1,5 @@
 # Testing to read atm file for TEA
+# runatm.py inputs/atm_dummy.dat TimeTest 2>&1 | tee times.txt
 
 import numpy as np
 import os

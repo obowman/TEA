@@ -1,4 +1,6 @@
 #! /usr/bin/env python
+times = False
+# runatm.py inputs/atm_dummy.dat TimesTest False 2>&1 | tee runtimes.txt 
 
 # In-shell inputs: file that contains atm data, one-word-description, True/False printing
 #
@@ -25,6 +27,11 @@ runatm.py inputs/atm_dummy ExampleAtm.dat False
 #      : Negate need for writing files at all before end
 #    X : Complete multi-run program!
 
+# SPEED TESTS, REMOVE LATER
+if times:
+    import time
+    start = time.time()
+
 import os
 import re
 import sys
@@ -36,6 +43,12 @@ import makeatmheader as mah
 from multiprocessing import Process, Queue
 from sys import argv
 from ast import literal_eval
+
+# SPEED TESTS, REMOVE LATER
+if times:
+    end = time.time()
+    elapsed = end - start
+    print("runatm.py imports:  " + str(elapsed))
 
 # ### Retrieve atm file
 infile  = argv[1:][0]# + '.dat'
@@ -80,6 +93,11 @@ for i in np.arange(np.size(spec_list)):
     fout.write(spec_list[i].rjust(10)+' ')
 fout.write('\n')
 
+# SPEED TESTS, REMOVE LATER
+if times:
+    new = time.time()
+    elapsed = new - end
+    print("pre-science:        " + str(elapsed))
 
 # start at 1, since first value is identifier
 for q in np.arange(n_runs)[1:]:
@@ -95,7 +113,15 @@ for q in np.arange(n_runs)[1:]:
     mah.makeatmheader(q, spec_list, \
                               pres_arr, temp_arr, atom_arr, desc)
     #print(loc_balance, loc_iterate)
+    # SPEED TESTS, REMOVE LATER
+    if times:
+        ini = time.time()
     subprocess.call([loc_balance, loc_headerfile, desc, str(doprint)], shell=True)
+    if times:
+        fin = time.time()
+        elapsed = fin - ini
+        print("balance.py:         " + str(elapsed))
+    
     subprocess.call([loc_iterate, loc_headerfile, desc, str(doprint)], shell=True)
     
     header, it_num, speclist, y, x, delta, y_bar, x_bar, delta_bar = form.readoutput('results/' + desc + '/results-machine-read.txt')

@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+times = False
 
 # ITERATE.PY
 # In-shell inputs: header file, data directory, True/False printing
@@ -19,8 +20,6 @@ python iterate.py full_White2.txt testing2 False
 
 # How abundances are read from input
 dex      = False      # Read as fromatm, dex values, log_10(counts)
-massfrac = False     # Read as mass fraction
-molefrac = False     # Read as mole fraction
 
 # ### 
 # Clean will remove files after use, but still create them to read/write 
@@ -34,7 +33,7 @@ molefrac = False     # Read as mole fraction
 clean   = True
 nofile  = True
 fromatm = False
-maxiter = 2 # Iteration to stop at
+maxiter = 100 # Iteration to stop at
 exp     = 40  # Precision in decimal places required for completion
 # Above 9 on linux will loop forever?
 # Up to 14 due to float constraints
@@ -42,7 +41,11 @@ exp     = 40  # Precision in decimal places required for completion
 
 # #################### NO EDITTING BELOW THIS LINE #################### #
 
-#print("Iterate imports...")
+# SPEED TESTS, REMOVE LATER
+if times:
+    import time
+    start = time.time()
+
 #import numpy as np
 from numpy import size
 from numpy import where
@@ -58,6 +61,12 @@ import lagrange   as lg
 import lambdacorr as lc
 import format     as form
 from   format import printout
+
+# SPEED TESTS, REMOVE LATER
+if times:
+    end = time.time()
+    elapsed = end - start
+    print("iterate.py imports: " + str(elapsed))
 
 # Read run-time arguments
 header   = argv[1:][0] # name of header file
@@ -92,14 +101,27 @@ if nofile:
 else:
     fin_iter2 = False
 
+# SPEED TESTS, REMOVE LATER
+if times:
+    new = time.time()
+    elapsed = new - end
+    print("pre-loop setup:     " + str(elapsed))
+
 while (repeat & fullout):
     # Simple progress info
-    if not doprint:
+    if ((not doprint) & (not times)):
         stdout.write(' ' + str(it_num) + '\r')
         stdout.flush()
         
     # ### Perform 'starting' iteration
+    # SPEED TESTS, REMOVE LATER
+    if times:
+        ini = time.time()
     ini_iter = lg.lagrange(it_num, datadir, doprint, fin_iter2, fromatm, dex)
+    if times:
+        fin = time.time()
+        elapsed = fin - ini
+        print("lagrange" + str(it_num).rjust(4) + " :      " + str(elapsed))
     
     # ### Cleanup files that are no longer needed
     form.cleanup(datadir, it_num, clean)
@@ -119,7 +141,14 @@ while (repeat & fullout):
     if where((lag_dat < 0) == True)[0].size != 0:
         if doprint:
             printout('Correction required. Initializing...')
+        if times:
+            ini = time.time()
         ini_iter2 = lc.lambdacorr(it_num, datadir, doprint, ini_iter, fromatm, dex)
+        # SPEED TESTS, REMOVE LATER
+        if times:
+            fin = time.time()
+            elapsed = fin - ini
+            print("lambcorr" + str(it_num).rjust(4) + " :      " + str(elapsed))
         if doprint:
             printout('Iteration %d lambda correction complete. Checking precision...', it_num)
     else:
@@ -143,11 +172,18 @@ while (repeat & fullout):
     it_num += 1
     
     # Simple progress info
-    if not doprint:
+    if ((not doprint) & (not times)):
         stdout.write(' ' + str(it_num) + '\r')
         stdout.flush()
     
+    # SPEED TESTS, REMOVE LATER
+    if times:
+        ini = time.time()
     fin_iter = lg.lagrange(it_num, datadir, doprint, ini_iter2, fromatm, dex)
+    if times:
+        fin = time.time()
+        elapsed = fin - ini
+        print("lagrange" + str(it_num).rjust(4) + " :      " + str(elapsed))
     if doprint:
         printout('Iteration %d Lagrange complete. Starting lambda correction...', it_num)
     
@@ -162,7 +198,14 @@ while (repeat & fullout):
     if where((lag_dat < 0) == True)[0].size != 0:
         if doprint:
             printout('Correction required. Initializing...')
+        # SPEED TESTS, REMOVE LATER
+        if times:
+            ini = time.time()
         fin_iter2 = lc.lambdacorr(it_num, datadir, doprint, fin_iter, fromatm, dex)
+        if times:
+            fin = time.time()
+            elapsed = fin - ini
+            print("lambcorr" + str(it_num).rjust(4) + " :      " + str(elapsed))
         if doprint:
             printout('Iteration %d lambda correction complete. Checking precision...', it_num)
         
