@@ -1,17 +1,12 @@
 #! /usr/bin/env python
-times = False
-# runatm.py inputs/atm_dummy.dat TimesTest False 2>&1 | tee runtimes.txt 
-
-# In-shell inputs: file that contains atm data, one-word-description, True/False printing
-#
-# EXAMPLE:
-'''
-runatm.py inputs/atm_dummy ExampleAtm.dat False
-'''
-# NOTE: stoch.txt and gdata must already exist.
 
 # runatm.py
-# ############
+# ################
+# In-shell inputs: file that contains atm data, one-word-description
+#         Example:
+#                  runatm.py inputs/atm_dummy ExampleAtm.dat
+#
+# ################
 # Single-use function to run TEA over a standard atmosphere file containing atomic abundances
 # Specifically, this should be used for multiple-line abundances/temps/pressures
 #
@@ -20,21 +15,23 @@ runatm.py inputs/atm_dummy ExampleAtm.dat False
 #     balance.py
 #     iteraten.py
 #
-# Will fill this in better later, but that's the bones of it!
-
 # ###### FUNCTION TODO:
 #    X : Accept appropriate parameters
 #      : Negate need for writing files at all before end
 #    X : Complete multi-run program!
 
-# SPEED TESTS, REMOVE LATER
+''' # FOR TESTING
+runatm.py inputs/atm_dummy.dat TimesTest 2>&1 | tee runtimes.txt 
+'''
+
+from TEA_config import *
+
+# Setup for time/speed testing
 if times:
     import time
     start = time.time()
 
 import os
-import re
-import sys
 import subprocess
 import numpy         as np
 import format        as form
@@ -42,22 +39,18 @@ import readatm       as ra
 import makeatmheader as mah
 from multiprocessing import Process, Queue
 from sys import argv
-from ast import literal_eval
 
-# SPEED TESTS, REMOVE LATER
+# Time / speed testing
 if times:
     end = time.time()
     elapsed = end - start
     print("runatm.py imports:  " + str(elapsed))
 
-# ### Retrieve atm file
+# Retrieve atm file
 infile  = argv[1:][0]# + '.dat'
 desc    = argv[1:][1]
-doprint = literal_eval(argv[1:][2])
 
-# Set up locations of necessary scripts and directories as well as bools and files
-save_headers = False
-save_outputs = False # NOTE: Must also have 'clean', 'nofile' as False in iterate.py
+# Set up locations of necessary scripts and directories of files
 cwd = os.getcwd() + '/'
 loc_readatm    = cwd + "readatm.py"
 loc_makeheader = cwd + "makeheader.py"
@@ -68,12 +61,13 @@ loc_outputs    = cwd + "/outputs/" + desc + "/"
 out_dir        = cwd + "/results/" + desc + "/"
 single_res     = ["results-machine-read.txt", "results-visual.txt"]
 
+# Read pre-atm file
 n_runs, spec_list, radi_arr, pres_arr, temp_arr, atom_arr, end_head = ra.readatm(infile)
 
-# ######################### EVENTUALY LOOP THIS OVER n_runs!
-# WRITE OUTPUT ATM FILE ONCE, keep open to add new lines!
+# Write output atm file once, keep open to add new lines
 if not os.path.exists(out_dir): os.makedirs(out_dir)
 fout_name = out_dir + desc + '.dat'
+fout = open(fout_name, 'w+')
 
 # Get header from pre-atm file
 fin  = open(infile, 'r+')
@@ -81,8 +75,6 @@ inlines = fin.readlines()
 fin.close()
 
 # Write non-TEA atm info and first line of table (labels)
-fout = open(fout_name, 'w+')
-
 for i in np.arange(end_head):
     fout.writelines([l for l in inlines[i]])
     
@@ -93,7 +85,7 @@ for i in np.arange(np.size(spec_list)):
     fout.write(spec_list[i].rjust(10)+' ')
 fout.write('\n')
 
-# SPEED TESTS, REMOVE LATER
+# Time / speed testing
 if times:
     new = time.time()
     elapsed = new - end
@@ -103,12 +95,14 @@ if times:
 if os.name == 'nt': inshell = True    # Windows
 else:               inshell = False   # OSx / Linux
 
-# start at 1, since first value is identifier
+# Loop over all lines in pre-atm file and execute TEA loop
 for q in np.arange(n_runs)[1:]:
     if doprint:
         print("\nReading atm file, TP line " + str(q))
     else:
         print('\n'+ str(q))
+    
+    # Radius, pressure, and temp for that line    
     radi = radi_arr[q]
     pres = pres_arr[q]
     temp = temp_arr[q]
@@ -116,20 +110,26 @@ for q in np.arange(n_runs)[1:]:
     # Produce header for single lien of file, run balace and iterate
     mah.makeatmheader(q, spec_list, \
                               pres_arr, temp_arr, atom_arr, desc)
-    #print(loc_balance, loc_iterate)
-    # SPEED TESTS, REMOVE LATER
+    
+    # Time / speed testing for balance
     if times:
         ini = time.time()
+    
+    # Get balanced initial guess for this line
     subprocess.call([loc_balance, loc_headerfile, desc, str(doprint)], shell = inshell)
+    
     if times:
         fin = time.time()
         elapsed = fin - ini
         print("balance.py:         " + str(elapsed))
     
+    # Execute main TEA loop for this line
     subprocess.call([loc_iterate, loc_headerfile, desc, str(doprint)], shell = inshell)
     
+    # Read output of TEA loop
     header, it_num, speclist, y, x, delta, y_bar, x_bar, delta_bar = form.readoutput('results/' + desc + '/results-machine-read.txt')
     
+    # Insert data from this line's results to atm file
     fout.write(radi.rjust(10) + ' ')
     fout.write(pres.rjust(10) + ' ')
     fout.write(temp.rjust(7) + ' ')

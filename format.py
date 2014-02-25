@@ -27,43 +27,38 @@ from sys import stdout
 # fancyout_results: Same as fancyout, but for the final results.
 
 
-def readheader(file, fromatm=False, dex=False):
+def readheader(file, dex=False):
     '''
     DESC
     '''
-    if fromatm:
-        return 'foo'
-    else:
-        f = open(file, 'r+')
-        l = 0
-        speclist = []
-        a = [[]]
-        c = []
-        for line in f.readlines():
-            if (l == 1):
-                pressure = np.float([value for value in line.split()][0])
-            #if (l == 2):
-            #    j = np.int([value for value in line.split()][0])
-            if (l == 2):
-                temp = np.float([value for value in line.split()][0])
-            if (l == 3):
-                val = [value for value in line.split()]
-                b   = [float(u) for u in val[1:]]
-            if (l == 4):
-                val = [value for value in line.split()]
-                speclist = np.append(speclist, val[0])
-                a = [[int(u) for u in val[1:-1]]]
-                c = np.float(val[-1])
-            if (l > 4):
-                val = [value for value in line.split()]
-                speclist = np.append(speclist, val[0])
-                a = np.append(a, [[int(u) for u in val[1:-1]]], axis=0)
-                c = np.append(c, np.float(val[-1]))
-            l += 1
-        
-        i = speclist.size
-        j = a.shape[1]
-        f.close()
+    f = open(file, 'r+')
+    l = 0
+    speclist = []
+    a = [[]]
+    c = []
+    for line in f.readlines():
+        if (l == 1):
+            pressure = np.float([value for value in line.split()][0])
+        if (l == 2):
+            temp = np.float([value for value in line.split()][0])
+        if (l == 3):
+            val = [value for value in line.split()]
+            b   = [float(u) for u in val[1:]]
+        if (l == 4):
+            val = [value for value in line.split()]
+            speclist = np.append(speclist, val[0])
+            a = [[int(u) for u in val[1:-1]]]
+            c = np.float(val[-1])
+        if (l > 4):
+            val = [value for value in line.split()]
+            speclist = np.append(speclist, val[0])
+            a = np.append(a, [[int(u) for u in val[1:-1]]], axis=0)
+            c = np.append(c, np.float(val[-1]))
+        l += 1
+    
+    i = speclist.size
+    j = a.shape[1]
+    f.close()
     
     if dex:
         b_10 = 10**np.array(b)

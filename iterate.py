@@ -1,68 +1,33 @@
 #! /usr/bin/env python
-times = False
 
-# ITERATE.PY
-# In-shell inputs: header file, data directory, True/False printing
+# iterate.py
+# ################
+# In-shell inputs: header file, name of data directory
+#         Example:
+#                  iterate.py full_White2.txt testing2
 #
-# FOR TESTING
-'''
-python iterate.py full_White2.txt testing2 False
-'''
-# NOTE! Precision is used as follows:
-# precision = 1e-(exp), so that
-# if exp = 1, precision = 1e-1 = 0.1
-#    exp = 5, precision = 1e-5 = 0.00001
-# This is used for the program to know when no improvement is made on
-#  the mol numbers from repeated lagrangian minimizations. A higher 'exp'
-#  value will result in more iterations being run.
-#
-# NOTE!!!!! fromatm, dex=True must also be in lagrange and lambacorr right now!
+# ################
+# DOCSTRING HERE
 
-# How abundances are read from input
-dex      = False      # Read as fromatm, dex values, log_10(counts)
+from TEA_config import *
 
-# ### 
-# Clean will remove files after use, but still create them to read/write 
-#  between iterations.  To stop use of files all together, use nofile.
-#  Note that speed increases if nofile is used, and multiple temp / pressure
-#  values will ONLY run with nofile.
-#  To read from atm file instead of header, set fromatm = True.  This is the only way
-#  run TEA over a list of T/P points
-# Note: if running runatm.py and you want to conserve all files, set 'clean'
-#  and 'nofile' to False
-clean   = True
-nofile  = True
-fromatm = False
-maxiter = 100 # Iteration to stop at
-exp     = 40  # Precision in decimal places required for completion
-# Above 9 on linux will loop forever?
-# Up to 14 due to float constraints
-
-
-# #################### NO EDITTING BELOW THIS LINE #################### #
-
-# SPEED TESTS, REMOVE LATER
+# Setup for time/speed testing
 if times:
     import time
     start = time.time()
 
-#import numpy as np
 from numpy import size
 from numpy import where
 from multiprocessing import Process, Queue
-#from sys import stdout
 from sys import argv
 from sys import stdout
-from ast import literal_eval
-#from sympy.core    import Symbol
-#from sympy.solvers import solve
 
 import lagrange   as lg
 import lambdacorr as lc
 import format     as form
 from   format import printout
 
-# SPEED TESTS, REMOVE LATER
+# Time / speed testing
 if times:
     end = time.time()
     elapsed = end - start
@@ -72,10 +37,9 @@ if times:
 header   = argv[1:][0] # name of header file
 datadir  = 'outputs/' + argv[1:][1] # location of storage directory
 datadirr = 'results/' + argv[1:][1] # location of final results
-doprint  = literal_eval(argv[1:][2])
 
 # Retrieve and set header info
-inhead   = form.readheader(header, fromatm, dex)
+inhead   = form.readheader(header, dex)
 pressure = inhead[0]
 temp     = inhead[1]
 precision = 10**(-exp)
@@ -90,68 +54,81 @@ x_bar     = input[6]
 x_bar_old = x_bar
 
 
-# ### Setup up first iteration (always has to be at least 1 iteration)
+# Setup up first iteration (always has to be at least 1 iteration)
 it_num  = 1
 repeat  = True
-fullout = True
 
-# ### Prepare iterative process to accept either files or pass data in memory
+# Prepare iterative process to accept either files or pass data in memory
 if nofile:
     fin_iter2 = [header, 0, speclist, x, x, 0, x_bar, x_bar, 0]
 else:
     fin_iter2 = False
 
-# SPEED TESTS, REMOVE LATER
+# Time / speed testing
 if times:
     new = time.time()
     elapsed = new - end
     print("pre-loop setup:     " + str(elapsed))
 
-while (repeat & fullout):
+# ### Perform main TEA loop, repeating lagrange minimization and lambda correction 
+#    for as long as is necessary given max iterations, precision, etc.  Loop is
+#    performed in chunks of two to allow comparison between two most recent loops
+#    without isolting the first loop.
+while repeat:
     # Simple progress info
     if ((not doprint) & (not times)):
         stdout.write(' ' + str(it_num) + '\r')
         stdout.flush()
         
     # ### Perform 'starting' iteration
-    # SPEED TESTS, REMOVE LATER
+    # Time / speed testing for first lagrange
     if times:
         ini = time.time()
-    ini_iter = lg.lagrange(it_num, datadir, doprint, fin_iter2, fromatm, dex)
+    
+    # Execute lagrange minimization
+    ini_iter = lg.lagrange(it_num, datadir, doprint, fin_iter2, dex)
+    
     if times:
         fin = time.time()
         elapsed = fin - ini
         print("lagrange" + str(it_num).rjust(4) + " :      " + str(elapsed))
     
-    # ### Cleanup files that are no longer needed
+    # Cleanup files that are no longer needed
     form.cleanup(datadir, it_num, clean)
     
     if doprint:
         printout('Iteration %d Lagrange complete. Starting lambda correction...', it_num)
     
+    # Recieve files by memory or file
     if fin_iter2:
         lag_dat, lag_dat2 = ini_iter[4], ini_iter[7]
     else:
         temp_in = form.readoutput(datadir + "/lagrange-iteration-" + str(it_num) + "-nocorr.txt")
         lag_dat, lag_dat2 = temp_in[4], temp_in[7]
-        
-    #[header, it_num, speclist, y, x, 
-    #  delta, y_bar, x_bar, delta_bar] = lg.lagrange(it_num, datadir, doprint)
     
+    # Check if lambda correction is needed (negative masses), and perform if needed
     if where((lag_dat < 0) == True)[0].size != 0:
+        # Correction is needed
         if doprint:
             printout('Correction required. Initializing...')
+            
+        # Time / speed testing for first lambda correction
         if times:
             ini = time.time()
-        ini_iter2 = lc.lambdacorr(it_num, datadir, doprint, ini_iter, fromatm, dex)
-        # SPEED TESTS, REMOVE LATER
+        
+        # Execute lambda correction
+        ini_iter2 = lc.lambdacorr(it_num, datadir, doprint, ini_iter, dex)
+        
         if times:
             fin = time.time()
             elapsed = fin - ini
             print("lambcorr" + str(it_num).rjust(4) + " :      " + str(elapsed))
+        
         if doprint:
             printout('Iteration %d lambda correction complete. Checking precision...', it_num)
     else:
+        # ### Correction is not needed
+        # Pass previous lagrange results as inputs to next iteration via memory or file
         if fin_iter2:
             ini_iter2 = ini_iter
             if doprint:
@@ -168,7 +145,7 @@ while (repeat & fullout):
             if doprint:
                 printout('Iteration %d did not need lambda correction.', it_num)
     
-    # ### Perform 'next' iteration
+    # Perform next iteration
     it_num += 1
     
     # Simple progress info
@@ -176,40 +153,54 @@ while (repeat & fullout):
         stdout.write(' ' + str(it_num) + '\r')
         stdout.flush()
     
-    # SPEED TESTS, REMOVE LATER
+    # Time / speed testing for second lambda correction
     if times:
         ini = time.time()
-    fin_iter = lg.lagrange(it_num, datadir, doprint, ini_iter2, fromatm, dex)
+    
+    # Execute lagrange minimization
+    fin_iter = lg.lagrange(it_num, datadir, doprint, ini_iter2, dex)
+    
     if times:
         fin = time.time()
         elapsed = fin - ini
         print("lagrange" + str(it_num).rjust(4) + " :      " + str(elapsed))
+    
     if doprint:
         printout('Iteration %d Lagrange complete. Starting lambda correction...', it_num)
     
-    # ### Cleanup files that are no longer needed
+    # Cleanup files that are no longer needed
     form.cleanup(datadir, it_num, clean)
     
+    # Recieve files by memory or file
     if fin_iter2:
         lag_dat = fin_iter[4]
     else:
         lag_dat = form.readoutput(datadir + "/lagrange-iteration-" + str(it_num) + "-nocorr.txt")[4]
     
+    # Check if lambda correction is needed (negative masses), and perform if needed
     if where((lag_dat < 0) == True)[0].size != 0:
+        # Correction is needed
         if doprint:
             printout('Correction required. Initializing...')
-        # SPEED TESTS, REMOVE LATER
+            
+        # Time / speed testing for second lambda correction
         if times:
             ini = time.time()
-        fin_iter2 = lc.lambdacorr(it_num, datadir, doprint, fin_iter, fromatm, dex)
+        
+        # Execute lambda correction
+        fin_iter2 = lc.lambdacorr(it_num, datadir, doprint, fin_iter, dex)
+        
         if times:
             fin = time.time()
             elapsed = fin - ini
             print("lambcorr" + str(it_num).rjust(4) + " :      " + str(elapsed))
+        
         if doprint:
             printout('Iteration %d lambda correction complete. Checking precision...', it_num)
         
     else:
+        # ### Correction is not needed
+        # Pass previous lagrange results as inputs to next iteration via memory or file
         if fin_iter2:
             fin_iter2 = fin_iter
             if doprint:
@@ -226,23 +217,23 @@ while (repeat & fullout):
             if doprint:
                 printout('Iteration %d did not need lambda correction.', it_num)
     
-    # ### Retrieve 'next' interation values
+    # Retrieve most recent interation values
     if fin_iter2:
         input_new = fin_iter2
     else:
         infile = datadir + '/lagrange-iteration-' + str(it_num) + '.txt'
         input_new = form.readoutput(infile)
     
-    x_new = input_new[4]
+    x_new     = input_new[4]
     x_bar_new = input_new[7]
-    # ### Calculate difference to see if it matches precision
+    
+    # Calculate difference between last two iterations to see if it matches precision
     diff = abs(x_old - x_new)
-    #print(diff)
     unsatisfied = [d for d in diff if d > precision]
     
-    
-    # ### Check if precision is met, repeat if not
-    if size(unsatisfied) == 0: # Precision is met
+    # Check if precision is met, repeat if not and iteration cap is not forced to completion
+    if ((size(unsatisfied) == 0) & (not forceiter)): 
+        # Precision is met
         printout('Precision of ' + str(precision) + ' is satisfied.\n')
         repeat = False
         delta = x_new - x
@@ -251,7 +242,8 @@ while (repeat & fullout):
         form.fancyout_results(datadirr, header, it_num, speclist, x, x_new, delta, x_bar, x_bar_new, delta_bar, pressure, temp, doprint)
         form.cleanup(datadir, it_num+1, clean)
 
-    elif it_num < maxiter: # Precision is not met, max iteration not met
+    elif it_num < maxiter: 
+        # Precision is not met, max iteration not met
         it_num += 1
         x_old = x_new
         x_bar_old = x_bar_new
@@ -259,7 +251,7 @@ while (repeat & fullout):
         if doprint:
             printout('Precision not met. Starting next iteration...\n')
     
-    # ### Stop if iteration 100 is reached (consider that 'good')
+    # Stop if max iteration is reached 
     elif it_num >= maxiter:
         printout('Maximum iteration reached, ending minimization.\n')
         repeat = False
@@ -269,6 +261,4 @@ while (repeat & fullout):
         form.fancyout_results(datadirr, header, it_num, speclist, x, x_new, delta, x_bar, x_bar_new, delta_bar, pressure, temp, doprint)
         form.cleanup(datadir, it_num+1, clean)
 
-while (repeat & (not fullout)):
-    printout("Testing!")
-    repeat = False
+# End of file

@@ -1,43 +1,41 @@
-# LAGRANGE.PY
-# Executed by iterate.py
+#! /usr/bin/env python
 
-#print('Lagrange imports...')
-import numpy as np
-#from sys import argv
-from sympy.core import Symbol
-from sympy.solvers import solve
+# lagrange.py
+# ################
+# Imported / Executed by iterate.py
+#
+# ################
+# See White et al 1958, Chemical Equilibrium in Complex Mixtures for methodology
+#  Performs lagrange minimzation for TEA loop
+#  MORE DOCSTRING
+
 import os
-#os.environ['OMP_NUM_THREADS']='10'
+import numpy as np
+from sympy.core    import Symbol
+from sympy.solvers import solve
+
 import format as form
 
-
-def lagrange(it_num, datadir, doprint, direct=False, fromatm=False, dex=False):
+def lagrange(it_num, datadir, doprint, direct=False, dex=False):
     '''
-    DESC HERE
-    
-    'b' it accepts is ABUNDANCE, want COUNT
+    DOCSTRING
     '''
     
     infile = datadir + '/lagrange-iteration-' + np.str(it_num - 1) + '.txt'
     
-    # ### Read in values from header.txt and previous output
+    # Read in values from header.txt and previous output
     if direct:
         input = direct
     else:
         input = form.readoutput(infile)
     
     header = input[0]
-    pressure, temp, i, j, speclist, a, b, c = form.readheader(header, fromatm, dex)
+    pressure, temp, i, j, speclist, a, b, g_RT = form.readheader(header, dex)
     
     y     = input[4] # 'x' in output file, using final values as new initials
     y_bar = input[7] # see above
     
-    # Convert b to counts
-    # FINDME TOTAL
-    #b *= 10
-    #print(b)
-    
-    # ### Perform checks to be safe
+    # Perform checks to be safe
     it_num_check = input[1]
     speclist_check = input[2]
     
@@ -51,6 +49,7 @@ def lagrange(it_num, datadir, doprint, direct=False, fromatm=False, dex=False):
     if check[1]:
         print("\n\nMAJOR ERROR! Read in file uses different species order/list!\n\n")
     
+    # FINDME: DEGRADED, CHECK IS SALVAGABLE
     save_JANAF = False
     if save_JANAF:
         dir_save = os.getcwd()
@@ -64,10 +63,10 @@ def lagrange(it_num, datadir, doprint, direct=False, fromatm=False, dex=False):
         f.close()
         
     
-    # Correct 'c' value for pressure     
-    c += np.log(pressure)
+    # Create 'c' value from 'g_RT' value with pressure correction    
+    c = g_RT + np.log(pressure)
     
-    # ### Set up values of fi(Y) over different values of i
+    # Set up values of fi(Y) over different values of i
     fi_y = np.zeros(i)
     
     for n in np.arange(i):
@@ -93,7 +92,6 @@ def lagrange(it_num, datadir, doprint, direct=False, fromatm=False, dex=False):
     #u = -1. + (x_bar/y_bar)
     u = Symbol('u')
     
-    
     # ### Set up pi_j variables, where j is species index
     # Example: pi_2 is lagrangian multipier of N (j = 2)
     pi = []
@@ -101,22 +99,22 @@ def lagrange(it_num, datadir, doprint, direct=False, fromatm=False, dex=False):
         name = 'pi_' + np.str(m+1)
         pi = np.append(pi, Symbol(name))
     
-    
     # ### Set up r_jk * pi_j summations
     # There will be j x k terms of r_jk * pi_j
     sq_pi = [pi]
     for m in np.arange(j-1):
-        sq_pi = np.append(sq_pi, [pi], axis = 0) # Make square array of pi values with shape j x k
+        # Make square array of pi values with shape j x k
+        sq_pi = np.append(sq_pi, [pi], axis = 0) 
     
-    rpi = rjk * sq_pi # Multiply rjk * sq_pi to get array of rjk * pi_j 
-    
+    # Multiply rjk * sq_pi to get array of rjk * pi_j 
+    rpi = rjk * sq_pi 
     
     # ################################################################### #
     # ####################### SET FINAL EQUATIONS! ###################### #
     # ################################################################### #
     # Total number of equations is j + 1
     
-    # ### Set up ai_j * fi(Y) summations
+    # Set up ai_j * fi(Y) summations
     aij_fiy = np.zeros((j))
     for m in np.arange(j):
         foo = 0.0
@@ -124,7 +122,7 @@ def lagrange(it_num, datadir, doprint, direct=False, fromatm=False, dex=False):
             foo += a[n,m] * fi_y[n]
         aij_fiy[m] = foo
     
-    # ### Create first j-1 equations
+    # Create first j-1 equations
     for m in np.arange(j):
         if m == 0:
             equations   = np.array([np.sum(rpi[m]) + b[m]*u - aij_fiy[m]])
@@ -132,13 +130,12 @@ def lagrange(it_num, datadir, doprint, direct=False, fromatm=False, dex=False):
             lagrange_eq = np.array([np.sum(rpi[m]) + b[m]*u - aij_fiy[m]])
             equations   = np.append(equations, lagrange_eq)
     
-    
-    # ### Last equation, only one here
+    # Last equation, only one here
     bpi = b * pi
     lagrange_eq = np.array([np.sum(bpi) - np.sum(fi_y)])
     equations = np.append(equations, lagrange_eq)
             
-    # ### Solve final system of equations
+    # Solve final system of equations
     unknowns = list(pi)
     unknowns.append(u)
     fsol = solve(list(equations), unknowns)
@@ -148,24 +145,25 @@ def lagrange(it_num, datadir, doprint, direct=False, fromatm=False, dex=False):
     # ########################## GET xi VALUES ########################## #
     # ################################################################### #
     
+    # Make array of pi values
     pi_f = []
     for m in np.arange(j):
         pi_f = np.append(pi_f, [fsol[pi[m]]])
     
+    # Calculate x_bar from solution to 'u'
     u_f = fsol[u]
     x_bar = (u_f + 1.)*y_bar
     
     # Start array for x values size of i
     x = np.zeros(i)
     
-    # Apply Lagrange solution for final values (eq 14)
+    # Apply lagrange solution for final values (eq 14)
     for n in np.arange(i):
         sum_pi_aij = 0.0
         for m in np.arange(j):
             sum_pi_aij += pi_f[m] * a[n, m]
         x[n] = - fi_y[n] + (y[n]/y_bar) * x_bar \
              + sum_pi_aij * y[n]
-    
     
     # ### Now have final mole values for this iteration!         
     # Also note the distance between initial and final
@@ -174,11 +172,7 @@ def lagrange(it_num, datadir, doprint, direct=False, fromatm=False, dex=False):
     delta = x - y
     delta_bar = x_bar - y_bar
     
-    # ### Export all values into output files
-    #if doprint:
-    #print(np.sum(x))
-    #print(x_bar)
-    
+    # Export all values into output files or via memory    
     if direct:
         return [header, it_num, speclist, y, x, delta, y_bar, x_bar, delta_bar]
     else:
@@ -186,3 +180,4 @@ def lagrange(it_num, datadir, doprint, direct=False, fromatm=False, dex=False):
         form.fancyout_nocorr(datadir, it_num, speclist, y, x, delta, y_bar, x_bar, delta_bar, doprint)
         return False
         
+# End of file
