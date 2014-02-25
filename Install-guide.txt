@@ -1,0 +1,31 @@
+Install guide for TEA:
+
+1.  Ensure python packages are installed:
+     Python: 2.7.3+
+     Numpy:  1.6.2+
+     Sympy:  0.7.2+
+    
+     Sympy download:
+         https://github.com/sympy/sympy/releases
+
+2.  Extract TEA. ##will make github public soon##
+     - This should also download the JANAF files (rawtables).
+
+3.  From TEA folder:
+     - run makestoch.py
+     - run readJANAF.py
+
+4.  Produce input file, either for single-TP or multi-TP (pre-atm file).
+     - See ##EXAMPLE HERE## for setup instructions.
+
+5.  Place appropriate input file in /inputs
+
+5b. OPTIONAL: Turn on/off debug options in TEA_config.txt
+
+6.  If running single-TP, in shell from TEA directory:
+      python runsingle.py /inputs/<FILENAME>.txt <DESCRIPTION-OF-RUN> False
+
+    If running pre-atm file, in shell from TEA directory:
+      python runatm.py /inputs/<FILENAME>.dat <DESCRIPTION-Of-RUN> False
+
+7.  Output will be in /results/<DESCRIPTION-OF-RUN>
