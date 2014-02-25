@@ -99,6 +99,10 @@ if times:
     elapsed = new - end
     print("pre-science:        " + str(elapsed))
 
+# Detect operating system for multi-processor support
+if os.name == 'nt': inshell = True    # Windows
+else:               inshell = False   # OSx / Linux
+
 # start at 1, since first value is identifier
 for q in np.arange(n_runs)[1:]:
     if doprint:
@@ -116,13 +120,13 @@ for q in np.arange(n_runs)[1:]:
     # SPEED TESTS, REMOVE LATER
     if times:
         ini = time.time()
-    subprocess.call([loc_balance, loc_headerfile, desc, str(doprint)], shell=True)
+    subprocess.call([loc_balance, loc_headerfile, desc, str(doprint)], shell = inshell)
     if times:
         fin = time.time()
         elapsed = fin - ini
         print("balance.py:         " + str(elapsed))
     
-    subprocess.call([loc_iterate, loc_headerfile, desc, str(doprint)], shell=True)
+    subprocess.call([loc_iterate, loc_headerfile, desc, str(doprint)], shell = inshell)
     
     header, it_num, speclist, y, x, delta, y_bar, x_bar, delta_bar = form.readoutput('results/' + desc + '/results-machine-read.txt')
     
