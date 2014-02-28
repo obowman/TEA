@@ -6,9 +6,7 @@ from ast import literal_eval
 from sys import argv
 import re
 import os
-# THIS IS JUST FOR OLIVER'S USE! DO NOT USE ON LINUX
-os.chdir('C:\\Users\\Nestor\\My Documents\\GitHub\\TEA')
-# ENDS OLIVER-ONLY CODE
+
 from comp import comp
 
 # False or True for printing errors, delete old version of stochdir if True

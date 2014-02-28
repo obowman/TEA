@@ -86,10 +86,8 @@ def lambdacorr(it_num, datadir, doprint, direct=False, dex=False):
     # Use exponential exploration to ensure smaller steps do not overshoot 
     # negative masses
     
-    out_lam = False
-    factor = -1
-    range = np.exp(np.linspace(lower,0,steps))
-    
+    # ### Create function to search dF_lam space for the last lambda value 
+    # before the minimum is passed
     def find_lam(range, i, x, y, delta, c, x_bar, y_bar, delta_bar):
         start = True
         for h in range:
@@ -102,41 +100,49 @@ def lambdacorr(it_num, datadir, doprint, direct=False, dex=False):
             start = False
         return lam
     
+    # ### Set up smart search for a good range of lambda to check: this will allow
+    # lambdacorr to find correct ranges of value in order to prevent the error
+    # outlined above; user input should no longer be required to fix this.
+    out_lam = False
+    factor = -1
+    range = np.exp(np.linspace(lower,0,steps))
+    
     while out_lam == False:
         factor += 1
         range = np.exp(np.linspace(lower*(1.5**factor),0,steps))
         out_lam = find_lam(range, i, x, y, delta, c, x_bar, y_bar, delta_bar)
     
+    # Retrieve last lambda value before the minimum was passed
     lam = out_lam
-    '''
-    for h in range:
-        val = dF_dlam(h, i, x, y, delta, c, x_bar, y_bar, delta_bar)        
-        if val > 0 or np.isnan(val) == True:
-                break
-        lam   = h
-    '''
-    #print('final lambda:', lam)
-    #print('bef:', dF_dlam(h, i, x, y, delta, c, x_bar, y_bar, delta_bar))
-    #print('aft:', dF_dlam(lam, i, x, y, delta, c, x_bar, y_bar, delta_bar))   
-    '''
+    
+    # OUTDATED, DO NOT USE
+    # for h in range:
+        # val = dF_dlam(h, i, x, y, delta, c, x_bar, y_bar, delta_bar)        
+        # if val > 0 or np.isnan(val) == True:
+                # break
+        # lam   = h
+    # 
+    # print('final lambda:', lam)
+    # print('bef:', dF_dlam(h, i, x, y, delta, c, x_bar, y_bar, delta_bar))
+    # print('aft:', dF_dlam(lam, i, x, y, delta, c, x_bar, y_bar, delta_bar))   
+    # '''
         # FINDME: fsolve convergence is failing.
-        result = fsolve(dF_dlam, lam, (i, x, y, delta, c, x_bar, y_bar, delta_bar), full_output=True)
-        if result[2] != 1:
-            step /= 10.
-            if doprint == True:
-                print('Lambda value of ' + np.str(lam) + ' was used unsuccessfully.')
-                print('Convergence was not found. Trying better precision...\n')
-        else:
-            repeat = False
-            lambda_it = result[0][0]
-        #lambda_it = lam
-            if doprint == True:
-                print('Result converged; use lambda = ' + np.str(lambda_it))
-                repeat = False
-    '''
+        # result = fsolve(dF_dlam, lam, (i, x, y, delta, c, x_bar, y_bar, delta_bar), full_output=True)
+        # if result[2] != 1:
+            # step /= 10.
+            # if doprint == True:
+                # print('Lambda value of ' + np.str(lam) + ' was used unsuccessfully.')
+                # print('Convergence was not found. Trying better precision...\n')
+        # else:
+            # repeat = False
+            # lambda_it = result[0][0]
+        # lambda_it = lam
+            # if doprint == True:
+                # print('Result converged; use lambda = ' + np.str(lambda_it))
+                # repeat = False
+    # '''
         
     # Correct x values given this value of lambda
-    #lam = h
     x_corr = y + lam * delta
     x_corr_bar = np.sum(x_corr)
     delta_corr = y - x_corr
