@@ -18,7 +18,7 @@ def lambdacorr(it_num, datadir, doprint, direct=False, dex=False):
     DOCSTRING
     '''
     
-    #np.seterr(all='ignore')
+    np.seterr(all='ignore')
     infile = datadir + '/lagrange-iteration-' + str(it_num) + '-nocorr.txt'
     
     # Read in values from header and previous non-corrected output
@@ -58,12 +58,12 @@ def lambdacorr(it_num, datadir, doprint, direct=False, dex=False):
     def dF_dlam(s, i, x, y, delta, c, x_bar, y_bar, delta_bar):
         dF_dlam = 0
         for n in np.arange(i):
-            dF_dlam += delta[n] * (c[n] + np.log(y[n] + s*delta[n]) - np.log(y_bar + s*delta_bar))
+            dF_dlam += delta[n] * (c[n] + np.log((y[n] + s*delta[n]) / (y_bar + s*delta_bar)))
         return dF_dlam
     
     # Find an alternative or describe better
     repeat = True
-    lower  = -20
+    lower  = -5
     steps  =  30
     
     # ### READ ABOUT POSSIBLE BREAK!
@@ -85,14 +85,40 @@ def lambdacorr(it_num, datadir, doprint, direct=False, dex=False):
     # Step towards final solution until negative masses are found
     # Use exponential exploration to ensure smaller steps do not overshoot 
     # negative masses
-    range = np.exp(np.linspace(lower, 0, steps))
+    
+    out_lam = False
+    factor = -1
+    range = np.exp(np.linspace(lower,0,steps))
+    
+    def find_lam(range, i, x, y, delta, c, x_bar, y_bar, delta_bar):
+        start = True
+        for h in range:
+            val = dF_dlam(h, i, x, y, delta, c, x_bar, y_bar, delta_bar)
+            while start & (val > 0 or np.isnan(val) == True):
+                return False
+            if val > 0 or np.isnan(val) == True:
+                break
+            lam = h
+            start = False
+        return lam
+    
+    while out_lam == False:
+        factor += 1
+        range = np.exp(np.linspace(lower*(1.5**factor),0,steps))
+        out_lam = find_lam(range, i, x, y, delta, c, x_bar, y_bar, delta_bar)
+    
+    lam = out_lam
+    '''
     for h in range:
-        val = dF_dlam(h, i, x, y, delta, c, x_bar, y_bar, delta_bar)
+        val = dF_dlam(h, i, x, y, delta, c, x_bar, y_bar, delta_bar)        
         if val > 0 or np.isnan(val) == True:
-            break
-        lam = h
-        
-        '''
+                break
+        lam   = h
+    '''
+    #print('final lambda:', lam)
+    #print('bef:', dF_dlam(h, i, x, y, delta, c, x_bar, y_bar, delta_bar))
+    #print('aft:', dF_dlam(lam, i, x, y, delta, c, x_bar, y_bar, delta_bar))   
+    '''
         # FINDME: fsolve convergence is failing.
         result = fsolve(dF_dlam, lam, (i, x, y, delta, c, x_bar, y_bar, delta_bar), full_output=True)
         if result[2] != 1:
@@ -107,9 +133,10 @@ def lambdacorr(it_num, datadir, doprint, direct=False, dex=False):
             if doprint == True:
                 print('Result converged; use lambda = ' + np.str(lambda_it))
                 repeat = False
-        '''
+    '''
         
     # Correct x values given this value of lambda
+    #lam = h
     x_corr = y + lam * delta
     x_corr_bar = np.sum(x_corr)
     delta_corr = y - x_corr
