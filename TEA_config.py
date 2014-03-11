@@ -3,7 +3,7 @@
 #  in-line testing / modifications.
 
 # ### Change below to control how TEA runs
-maxiter   = 100  # (Def: 100) Iteration each TP should stop at. More 
+maxiter   = 20  # (Def: 100) Iteration each TP should stop at. More 
                  #   iterations ensure more accurate results but will 
                  #   increase calculation time
 forceiter = True # (Def: True) Force TEA to perform all iterations 
@@ -13,11 +13,11 @@ exp       =  40  # (Def: 40) Decimal digit to limit mole fraction
 
 # ### Change below to control output files / displays
 doprint = False # (Def: False) Enable various debug printouts 
-times   = True # (Def: False) Enable time printing for speed tests 
+times   = False # (Def: False) Enable time printing for speed tests 
 
-save_headers = False # (Def: False) Preserve headers for multi-TP 
+save_headers = True # (Def: False) Preserve headers for multi-TP 
                     #   pre-atm files 
-save_outputs = False # (Def: False) Preserve intermediate outputs for 
+save_outputs = True # (Def: False) Preserve intermediate outputs for 
                     #   multi-TP pre-atm files 
 clean        = True # (Def: True) Erase any intermediate files made 
                     #   after production

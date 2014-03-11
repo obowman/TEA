@@ -106,12 +106,16 @@ def lambdacorr(it_num, datadir, doprint, direct=False, dex=False):
     out_lam = False
     factor = -1
     range = np.exp(np.linspace(lower,0,steps))
-    
+    print("At temp: " + str(temp))
+
     while out_lam == False:
         factor += 1
         range = np.exp(np.linspace(lower*(1.5**factor),0,steps))
+        print("  Trying lam: " + str(range[0]))
+        print(lower*(1.5**factor))
         out_lam = find_lam(range, i, x, y, delta, c, x_bar, y_bar, delta_bar)
     
+    print("    Good lam: " + str(out_lam))
     # Retrieve last lambda value before the minimum was passed
     lam = out_lam
     
