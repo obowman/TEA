@@ -9,24 +9,26 @@ https://github.com/obowman/TEA/releases/
      Sympy download:
          https://github.com/sympy/sympy/releases
 
-2.  Extract TEA. 
+2.  Extract TEA from the lastest github release. 
      - This should also download the JANAF files (rawtables).
 
 3.  From TEA folder:
-     - run makestoch.py
-     - run readJANAF.py False
+     Note that for anywhere you see False in the command prompt, you can 
+      instead use "True" to see debugging information and checks.
+     - run "python makestoch.py False"
+     - run "python readJANAF.py False"
 
 4.  Produce input file, either for single-TP or multi-TP (pre-atm file).
      - See ##EXAMPLE HERE## for setup instructions.
 
 5.  Place appropriate input file in /inputs
 
-5b. OPTIONAL: Turn on/off debug options in TEA_config.txt
+5b. OPTIONAL: Turn on/off debug and/or run options in TEA_config.py
 
 6.  If running single-TP, in shell from TEA directory:
-      python runsingle.py /inputs/<FILENAME>.txt <DESCRIPTION-OF-RUN> False
+      python runsingle.py /inputs/<FILENAME>.txt <OUTPUT-FOLDER>
 
     If running pre-atm file, in shell from TEA directory:
-      python runatm.py /inputs/<FILENAME>.dat <DESCRIPTION-Of-RUN> False
+      python runatm.py /inputs/<FILENAME>.dat <OUTPUT-FOLDER>
 
 7.  Output will be in /results/<DESCRIPTION-OF-RUN>
