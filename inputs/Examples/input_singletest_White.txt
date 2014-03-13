@@ -1,0 +1,12 @@
+3500
+51.0344729
+H_g
+H2_ref
+H2O_g
+N_g
+NH_g
+NO_g
+N2_ref
+O_g
+OH_g
+O2_ref

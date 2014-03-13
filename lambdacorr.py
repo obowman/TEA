@@ -12,6 +12,7 @@
 import numpy as np
 
 import format as form
+from TEA_config import *
 
 def lambdacorr(it_num, datadir, doprint, direct=False, dex=False):
     '''
@@ -63,8 +64,8 @@ def lambdacorr(it_num, datadir, doprint, direct=False, dex=False):
     
     # Find an alternative or describe better
     repeat = True
-    lower  = -5
-    steps  =  30
+    #lower  = -5
+    #steps  =  10
     
     # ### READ ABOUT POSSIBLE BREAK!
     # If you ever get the error message "lam referenced before assignment",
@@ -103,19 +104,26 @@ def lambdacorr(it_num, datadir, doprint, direct=False, dex=False):
     # ### Set up smart search for a good range of lambda to check: this will allow
     # lambdacorr to find correct ranges of value in order to prevent the error
     # outlined above; user input should no longer be required to fix this.
-    out_lam = False
-    factor = -1
+    
     range = np.exp(np.linspace(lower,0,steps))
+
     # FINDME: TESTING
     print("At temp: " + str(temp))
-
-    while out_lam == False:
-        factor += 1
-        range = np.exp(np.linspace(lower*(1.5**factor),0,steps))
-        print("  Trying lam: " + str(range[0]))
-        print(lower*(1.5**factor))
-        out_lam = find_lam(range, i, x, y, delta, c, x_bar, y_bar, delta_bar)
     
+    if explore:
+        out_lam = False
+        factor = -1
+        range = np.exp(np.linspace(lower,0,steps))
+        while out_lam == False:
+            factor += 1
+            range = np.exp(np.linspace(lower*(1.5**factor),0,steps))
+            print("  Trying lam: " + str(range[0]))
+            print(lower*(1.5**factor))
+            out_lam = find_lam(range, i, x, y, delta, c, x_bar, y_bar, delta_bar)
+    else:
+        print("  Trying lam: " + str(range[0]))
+        out_lam = find_lam(range, i, x, y, delta, c, x_bar, y_bar, delta_bar)
+        
     print("    Good lam: " + str(out_lam))
     # Retrieve last lambda value before the minimum was passed
     lam = out_lam
