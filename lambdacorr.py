@@ -116,9 +116,10 @@ def lambdacorr(it_num, datadir, doprint, direct=False, dex=False):
         range = np.exp(np.linspace(lower,0,steps))
         while out_lam == False:
             factor += 1
-            range = np.exp(np.linspace(lower*(1.5**factor),0,steps))
+            newlow = lower*(1 + (.1*factor))
+            range = np.exp(np.linspace(newlow,0,steps))
             print("  Trying lam: " + str(range[0]))
-            print(lower*(1.5**factor))
+            print(newlow)
             out_lam = find_lam(range, i, x, y, delta, c, x_bar, y_bar, delta_bar)
     else:
         print("  Trying lam: " + str(range[0]))
