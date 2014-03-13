@@ -106,6 +106,7 @@ def lambdacorr(it_num, datadir, doprint, direct=False, dex=False):
     out_lam = False
     factor = -1
     range = np.exp(np.linspace(lower,0,steps))
+    # FINDME: TESTING
     print("At temp: " + str(temp))
 
     while out_lam == False:
