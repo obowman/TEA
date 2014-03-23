@@ -101,17 +101,29 @@ def lambdacorr(it_num, datadir, doprint, direct=False, dex=False):
             start = False
         return lam
     
+    def find_lam2(range, i, x, y, delta, c, x_bar, y_bar, delta_bar):
+        rev_range = range[::-1]
+        for h in rev_range:
+            #print(h)
+            val = dF_dlam(h, i, x, y, delta, c, x_bar, y_bar, delta_bar)
+            if val < 0:
+                #print(val)
+                break
+        lam = h
+        return lam
     # ### Set up smart search for a good range of lambda to check: this will allow
     # lambdacorr to find correct ranges of value in order to prevent the error
     # outlined above; user input should no longer be required to fix this.
     
     range = np.exp(np.linspace(lower,0,steps))
-
     # FINDME: TESTING
     print("At temp: " + str(temp))
     
     if explore:
         out_lam = False
+        out_lam = find_lam2(range, i, x, y, delta, c, x_bar, y_bar, delta_bar)
+        ''' #Testing method
+
         factor = -1
         range = np.exp(np.linspace(lower,0,steps))
         while out_lam == False:
@@ -121,6 +133,8 @@ def lambdacorr(it_num, datadir, doprint, direct=False, dex=False):
             #print("  Trying lam: " + str(range[0]))
             print(newlow)
             out_lam = find_lam(range, i, x, y, delta, c, x_bar, y_bar, delta_bar)
+        '''
+        
     else:
         #print("  Trying lam: " + str(range[0]))
         out_lam = find_lam(range, i, x, y, delta, c, x_bar, y_bar, delta_bar)

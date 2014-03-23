@@ -27,9 +27,9 @@ nofile       = True # (Def: True) Use main loop using no intermediate
 # ########################
 # DEBUGGING BOOLEANS BELOW
 
-explore = False  # Allow for lambda exploration (smart find)
-lower   = -20    # lowest exponent for lambda array
-steps   = 30    # Steps in lambda array
+explore = True  # Allow for lambda exploration (smart find)
+lower   = -50    # lowest exponent for lambda array
+steps   = 50   # Steps in lambda array
 
 # ### DEGRADED, DO NOT CHANGE FOR NOW
 dex     = False
