@@ -3,7 +3,7 @@
 #  in-line testing / modifications.
 
 # ### Change below to control how TEA runs
-maxiter   = 20  # (Def: 100) Iteration each TP should stop at. More 
+maxiter   = 100  # (Def: 100) Iteration each TP should stop at. More 
                  #   iterations ensure more accurate results but will 
                  #   increase calculation time
 forceiter = True # (Def: True) Force TEA to perform all iterations 
@@ -15,9 +15,9 @@ exp       =  40  # (Def: 40) Decimal digit to limit mole fraction
 doprint = False # (Def: False) Enable various debug printouts 
 times   = False # (Def: False) Enable time printing for speed tests 
 
-save_headers = True # (Def: False) Preserve headers for multi-TP 
+save_headers = False # (Def: False) Preserve headers for multi-TP 
                     #   pre-atm files 
-save_outputs = True # (Def: False) Preserve intermediate outputs for 
+save_outputs = False # (Def: False) Preserve intermediate outputs for 
                     #   multi-TP pre-atm files 
 clean        = True # (Def: True) Erase any intermediate files made 
                     #   after production
@@ -27,9 +27,9 @@ nofile       = True # (Def: True) Use main loop using no intermediate
 # ########################
 # DEBUGGING BOOLEANS BELOW
 
-explore = True  # Allow for lambda exploration (smart find)
-lower   = -4.5    # lowest exponent for lambda array
-steps   =   30    # Steps in lambda array
+explore = False  # Allow for lambda exploration (smart find)
+lower   = -20    # lowest exponent for lambda array
+steps   = 30    # Steps in lambda array
 
 # ### DEGRADED, DO NOT CHANGE FOR NOW
 dex     = False

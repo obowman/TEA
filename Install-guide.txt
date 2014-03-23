@@ -4,7 +4,7 @@ https://github.com/obowman/TEA/releases/
 1.  Ensure python packages are installed:
      Python: 2.7.3+
      Numpy:  1.6.2+
-     Sympy:  0.7.2+
+     Sympy:  0.7.1.rc1 (Use of this version ensures maximum performance)
     
      Sympy download:
          https://github.com/sympy/sympy/releases
