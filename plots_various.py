@@ -9,7 +9,7 @@ import os
 
 dir = os.getcwd()
 
-filename = '/checkIterations100Precision40.dat'
+filename = '/results/EndMarTestExplore/EndMarTestExplore.dat'
 T, CO, CH4, H2O, N2, NH3= np.loadtxt(dir + filename, dtype=float, comments='#', delimiter=None, converters=None, skiprows=13, usecols=(2, 8, 9, 10, 11, 12), unpack=True, ndmin=0)
 
 plt.ion()
@@ -47,20 +47,20 @@ plt.xlim(100, 3000)
 plt.savefig("TEA-pMax-TEAWhite1P1T.png")
 '''
 
-plt.title('TEA-iteration100-precision40', fontsize=14)
+plt.title('EndMarTestExplore', fontsize=14)
 plt.xlabel('T [K]'                  , fontsize=14)
 plt.ylabel('log10 Mixing Fraction' , fontsize=14)
 plt.legend(loc='lower center', prop={'size':10})
 plt.ylim(-10, -2)
 plt.xlim(100, 3000)
-plt.savefig("TEBS-Solids-after-iteration100-precision40")
+plt.savefig("EndMarTestExplore")
 
 
 # #############################################################
 # #########################
 # ### PLOT JANAF VALUES ###
 # #########################
-
+'''
 dir = os.getcwd() + '/outputs/'
 desc = "checkJANAF/"
 files = np.array([])
@@ -92,3 +92,4 @@ plt.show()
 
 
 
+'''

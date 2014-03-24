@@ -59,7 +59,7 @@ def lambdacorr(it_num, datadir, doprint, direct=False, dex=False):
     def dF_dlam(s, i, x, y, delta, c, x_bar, y_bar, delta_bar):
         dF_dlam = 0
         for n in np.arange(i):
-            dF_dlam += delta[n] * (c[n] + np.log((y[n] + s*delta[n]) / (y_bar + s*delta_bar)))
+            dF_dlam += delta[n] * (c[n] + np.log(y[n] + s*delta[n]) - np.log(y_bar + s*delta_bar))
         return dF_dlam
     
     # Find an alternative or describe better
@@ -89,6 +89,7 @@ def lambdacorr(it_num, datadir, doprint, direct=False, dex=False):
     
     # ### Create function to search dF_lam space for the last lambda value 
     # before the minimum is passed
+    
     def find_lam(range, i, x, y, delta, c, x_bar, y_bar, delta_bar):
         start = True
         for h in range:
@@ -103,6 +104,7 @@ def lambdacorr(it_num, datadir, doprint, direct=False, dex=False):
     
     def find_lam2(range, i, x, y, delta, c, x_bar, y_bar, delta_bar):
         rev_range = range[::-1]
+        #print(rev_range)
         for h in rev_range:
             #print(h)
             val = dF_dlam(h, i, x, y, delta, c, x_bar, y_bar, delta_bar)
@@ -111,19 +113,28 @@ def lambdacorr(it_num, datadir, doprint, direct=False, dex=False):
                 break
         lam = h
         return lam
+    
     # ### Set up smart search for a good range of lambda to check: this will allow
     # lambdacorr to find correct ranges of value in order to prevent the error
     # outlined above; user input should no longer be required to fix this.
     
     range = np.exp(np.linspace(lower,0,steps))
     # FINDME: TESTING
-    print("At temp: " + str(temp))
+    #print("At temp: " + str(temp))
+    
+    higher_lamb = np.arange(0.5, 1, 0.1)
+    smart_range = np.append(range[range<0.5], higher_lamb)
     
     if explore:
-        out_lam = False
-        out_lam = find_lam2(range, i, x, y, delta, c, x_bar, y_bar, delta_bar)
+        #for h in range[::-1]:
+        #    val = dF_dlam(h, i, x, y, delta, c, x_bar, y_bar, delta_bar)
+        #    if val < 0:
+        #        break
+        #    lam = h
+        #    out_lam = lam
+        out_lam = find_lam2(smart_range, i, x, y, delta, c, x_bar, y_bar, delta_bar)
         ''' #Testing method
-
+        out_lam = False
         factor = -1
         range = np.exp(np.linspace(lower,0,steps))
         while out_lam == False:
@@ -134,12 +145,18 @@ def lambdacorr(it_num, datadir, doprint, direct=False, dex=False):
             print(newlow)
             out_lam = find_lam(range, i, x, y, delta, c, x_bar, y_bar, delta_bar)
         '''
-        
     else:
+        #for h in range:
+        #    val = dF_dlam(h, i, x, y, delta, c, x_bar, y_bar, delta_bar)
+        #    if val > 0 or np.isnan(val) == True:
+        #        break
+        #    lam = h
+        #out_lam = lam
+        #print("no explore")
         #print("  Trying lam: " + str(range[0]))
         out_lam = find_lam(range, i, x, y, delta, c, x_bar, y_bar, delta_bar)
         
-    print("    Good lam: " + str(out_lam))
+    #print("    Good lam: " + str(out_lam))
     # Retrieve last lambda value before the minimum was passed
     lam = out_lam
     
