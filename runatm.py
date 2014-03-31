@@ -32,6 +32,7 @@ if times:
     start = time.time()
 
 import os
+import shutil
 import subprocess
 import numpy         as np
 import format        as form
@@ -116,8 +117,21 @@ for q in np.arange(n_runs)[1:]:
         ini = time.time()
     
     # Get balanced initial guess for this line
-    subprocess.call([loc_balance, loc_headerfile, desc, str(doprint)], shell = inshell)
-    
+    if testbool:
+        print("Guess Testing")
+        if q > 1:
+            #print(desc)
+            #print(q)
+            #print(out_dir + single_res[0])
+            #print(out_dir + "Previous_Result.txt")
+            #print(loc_outputs + "lagrange-iteration-0.txt")
+            if not os.path.exists(loc_outputs): os.makedirs(loc_outputs)
+            shutil.copy(out_dir + "Previous_Result.txt", loc_outputs + "lagrange-iteration-0.txt")
+        else:
+            subprocess.call([loc_balance, loc_headerfile, desc, str(doprint)], shell = inshell)
+    else:
+        subprocess.call([loc_balance, loc_headerfile, desc, str(doprint)], shell = inshell)
+        
     if times:
         fin = time.time()
         elapsed = fin - ini
@@ -129,6 +143,7 @@ for q in np.arange(n_runs)[1:]:
     # Read output of TEA loop
     header, it_num, speclist, y, x, delta, y_bar, x_bar, delta_bar = form.readoutput('results/' + desc + '/results-machine-read.txt')
     
+    
     # Insert data from this line's results to atm file
     fout.write(radi.rjust(10) + ' ')
     fout.write(pres.rjust(10) + ' ')
@@ -138,6 +153,10 @@ for q in np.arange(n_runs)[1:]:
         fout.write('%1.4e'%cur_abn + ' ')
     
     fout.write('\n')
+    
+    if testbool:
+        shutil.copy(out_dir + single_res[0], out_dir + "Previous_Result.txt")
+    
     
     # ### Perserve or delete intermediate files
     # Save / remove headers

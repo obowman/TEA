@@ -9,58 +9,70 @@ import os
 
 dir = os.getcwd()
 
-filename = '/results/EndMarTestExplore/EndMarTestExplore.dat'
-T, CO, CH4, H2O, N2, NH3= np.loadtxt(dir + filename, dtype=float, comments='#', delimiter=None, converters=None, skiprows=13, usecols=(2, 8, 9, 10, 11, 12), unpack=True, ndmin=0)
+filename = '/results/NewStartTest3/NewStartTest3.dat'
+T, CO, CH4, H2O, N2, NH3 = np.loadtxt(dir + filename, dtype=float, comments='#', delimiter=None, converters=None, skiprows=13, usecols=(2, 8, 9, 10, 11, 12), unpack=True, ndmin=0)
 
 plt.ion()
 plt.figure(1)
 plt.clf()
 
 # H2O condensate below 273 K
-H2O[T < 273] = 1e-50 
+H2O[T < 273] = 1e-50
 
-plt.plot(T, np.log10(CO ), 'r-')
+plt.plot(T, np.log10(CO ), 'r-', label="Explore")
 plt.plot(T, np.log10(CH4), '-', color = 'k')
 plt.plot(T, np.log10(H2O), '-', color = 'cyan')
 plt.plot(T, np.log10(N2 ), '-', color = 'g')
 plt.plot(T, np.log10(NH3), '-', color = 'b')
 
-plt.xlim(100, 3000)
-plt.ylim(-10, -2)
-
-'''
-plt.title('TEA-iteration52-precision14', fontsize=14)
+plt.title('NewStartTest3', fontsize=14)
 plt.xlabel('T [K]'                  , fontsize=14)
 plt.ylabel('log10 Mixing Fraction' , fontsize=14)
 plt.legend(loc='lower center', prop={'size':10})
 plt.ylim(-10, -2)
 plt.xlim(100, 3000)
-plt.savefig("TEA-iteration52-precision14")
-
-
-plt.title('TEA-pMax-TEAWhite1P1T', fontsize=14)
-plt.xlabel('T [K]'                  , fontsize=14)
-plt.ylabel('log10 Mixing Fraction' , fontsize=14)
-plt.legend(loc='lower center', prop={'size':10})
-plt.ylim(-10, -2)
-plt.xlim(100, 3000)
-plt.savefig("TEA-pMax-TEAWhite1P1T.png")
+plt.savefig("NewStartTest(withoutnew)")
 '''
 
-plt.title('EndMarTestExplore', fontsize=14)
+
+# Overplot
+dir = os.getcwd()
+filename = '/results/EndMarTest/EndMarTest.dat'
+T, CO, CH4, H2O, N2, NH3 = np.loadtxt(dir + filename, dtype=float, comments='#', delimiter=None, converters=None, skiprows=13, usecols=(2, 8, 9, 10, 11, 12), unpack=True, ndmin=0)
+
+#plt.ion()
+#plt.figure(1)
+#plt.clf()
+
+# H2O condensate below 273 K
+H2O[T < 273] = 1e-50
+
+plt.plot(T, np.log10(CO ), 'r+', label="No explore")
+plt.plot(T, np.log10(CH4), '+', color = 'k')
+plt.plot(T, np.log10(H2O), '+', color = 'cyan')
+plt.plot(T, np.log10(N2 ), '+', color = 'g')
+plt.plot(T, np.log10(NH3), '+', color = 'b')
+
+plt.xlim(100, 3000)
+plt.ylim(-10, -2)
+
+plt.title('EndMarTestCompare', fontsize=14)
 plt.xlabel('T [K]'                  , fontsize=14)
 plt.ylabel('log10 Mixing Fraction' , fontsize=14)
 plt.legend(loc='lower center', prop={'size':10})
 plt.ylim(-10, -2)
 plt.xlim(100, 3000)
-plt.savefig("EndMarTestExplore")
+plt.savefig("EndMarTestCompare")
+
+
+
 
 
 # #############################################################
 # #########################
 # ### PLOT JANAF VALUES ###
 # #########################
-'''
+
 dir = os.getcwd() + '/outputs/'
 desc = "checkJANAF/"
 files = np.array([])
