@@ -39,7 +39,7 @@ datadir  = 'outputs/' + argv[1:][1] # location of storage directory
 datadirr = 'results/' + argv[1:][1] # location of final results
 
 # Retrieve and set header info
-inhead   = form.readheader(header, dex)
+inhead   = form.readheader(header)
 pressure = inhead[0]
 temp     = inhead[1]
 precision = 10**(-exp)
@@ -59,10 +59,8 @@ it_num  = 1
 repeat  = True
 
 # Prepare iterative process to accept either files or pass data in memory
-if nofile:
-    fin_iter2 = [header, 0, speclist, x, x, 0, x_bar, x_bar, 0]
-else:
-    fin_iter2 = False
+fin_iter2 = [header, 0, speclist, x, x, 0, x_bar, x_bar, 0]
+
 
 # Time / speed testing
 if times:
@@ -86,7 +84,7 @@ while repeat:
         ini = time.time()
     
     # Execute lagrange minimization
-    ini_iter = lg.lagrange(it_num, datadir, doprint, fin_iter2, dex)
+    ini_iter = lg.lagrange(it_num, datadir, doprint, fin_iter2)
     
     if times:
         fin = time.time()
@@ -94,17 +92,17 @@ while repeat:
         print("lagrange" + str(it_num).rjust(4) + " :      " + str(elapsed))
     
     # Cleanup files that are no longer needed
-    form.cleanup(datadir, it_num, clean)
+    #form.cleanup(datadir, it_num, clean)
     
     if doprint:
         printout('Iteration %d Lagrange complete. Starting lambda correction...', it_num)
     
     # Recieve files by memory or file
-    if fin_iter2:
-        lag_dat, lag_dat2 = ini_iter[4], ini_iter[7]
-    else:
-        temp_in = form.readoutput(datadir + "/lagrange-iteration-" + str(it_num) + "-nocorr.txt")
-        lag_dat, lag_dat2 = temp_in[4], temp_in[7]
+    #if fin_iter2:
+    lag_dat, lag_dat2 = ini_iter[4], ini_iter[7]
+    #else:
+    #    temp_in = form.readoutput(datadir + "/lagrange-iteration-" + str(it_num) + "-nocorr.txt")
+    #    lag_dat, lag_dat2 = temp_in[4], temp_in[7]
     
     # Check if lambda correction is needed (negative masses), and perform if needed
     if where((lag_dat < 0) == True)[0].size != 0:
@@ -117,7 +115,7 @@ while repeat:
             ini = time.time()
         
         # Execute lambda correction
-        ini_iter2 = lc.lambdacorr(it_num, datadir, doprint, ini_iter, dex)
+        ini_iter2 = lc.lambdacorr(it_num, datadir, doprint, ini_iter)
         
         if times:
             fin = time.time()
@@ -129,21 +127,21 @@ while repeat:
     else:
         # ### Correction is not needed
         # Pass previous lagrange results as inputs to next iteration via memory or file
-        if fin_iter2:
-            ini_iter2 = ini_iter
-            if doprint:
-                printout('Iteration %d did not need lambda correction.', it_num)
-        else:
-            prev = datadir + "/lagrange-iteration-" + str(it_num) + "-nocorr.txt"
-            prev_load = open(prev)
-            next = datadir + "/lagrange-iteration-" + str(it_num) + ".txt"
-            next_load = open(next, 'w')
-            data = prev_load.read()
-            next_load.write(data)
-            prev_load.close()
-            next_load.close()
-            if doprint:
-                printout('Iteration %d did not need lambda correction.', it_num)
+        #if fin_iter2:
+        ini_iter2 = ini_iter
+        if doprint:
+            printout('Iteration %d did not need lambda correction.', it_num)
+        #else:
+        #    prev = datadir + "/lagrange-iteration-" + str(it_num) + "-nocorr.txt"
+        #    prev_load = open(prev)
+        #    next = datadir + "/lagrange-iteration-" + str(it_num) + ".txt"
+        #    next_load = open(next, 'w')
+        #    data = prev_load.read()
+        #    next_load.write(data)
+        #    prev_load.close()
+        #    next_load.close()
+        #    if doprint:
+        #        printout('Iteration %d did not need lambda correction.', it_num)
     
     # Perform next iteration
     it_num += 1
@@ -158,7 +156,7 @@ while repeat:
         ini = time.time()
     
     # Execute lagrange minimization
-    fin_iter = lg.lagrange(it_num, datadir, doprint, ini_iter2, dex)
+    fin_iter = lg.lagrange(it_num, datadir, doprint, ini_iter2)
     
     if times:
         fin = time.time()
@@ -169,13 +167,13 @@ while repeat:
         printout('Iteration %d Lagrange complete. Starting lambda correction...', it_num)
     
     # Cleanup files that are no longer needed
-    form.cleanup(datadir, it_num, clean)
+    #form.cleanup(datadir, it_num, clean)
     
     # Recieve files by memory or file
-    if fin_iter2:
-        lag_dat = fin_iter[4]
-    else:
-        lag_dat = form.readoutput(datadir + "/lagrange-iteration-" + str(it_num) + "-nocorr.txt")[4]
+    #if fin_iter2:
+    lag_dat = fin_iter[4]
+    #else:
+    #    lag_dat = form.readoutput(datadir + "/lagrange-iteration-" + str(it_num) + "-nocorr.txt")[4]
     
     # Check if lambda correction is needed (negative masses), and perform if needed
     if where((lag_dat < 0) == True)[0].size != 0:
@@ -188,7 +186,7 @@ while repeat:
             ini = time.time()
         
         # Execute lambda correction
-        fin_iter2 = lc.lambdacorr(it_num, datadir, doprint, fin_iter, dex)
+        fin_iter2 = lc.lambdacorr(it_num, datadir, doprint, fin_iter)
         
         if times:
             fin = time.time()
@@ -201,28 +199,28 @@ while repeat:
     else:
         # ### Correction is not needed
         # Pass previous lagrange results as inputs to next iteration via memory or file
-        if fin_iter2:
-            fin_iter2 = fin_iter
-            if doprint:
-                printout('Iteration %d did not need lambda correction.', it_num)
-        else:
-            prev = datadir + "/lagrange-iteration-" + str(it_num) + "-nocorr.txt"
-            prev_load = open(prev)
-            next = datadir + "/lagrange-iteration-" + str(it_num) + ".txt"
-            next_load = open(next, 'w')
-            data = prev_load.read()
-            next_load.write(data)
-            prev_load.close()
-            next_load.close()
-            if doprint:
-                printout('Iteration %d did not need lambda correction.', it_num)
+        #if fin_iter2:
+        fin_iter2 = fin_iter
+        if doprint:
+            printout('Iteration %d did not need lambda correction.', it_num)
+        #else:
+        #    prev = datadir + "/lagrange-iteration-" + str(it_num) + "-nocorr.txt"
+        #    prev_load = open(prev)
+        #    next = datadir + "/lagrange-iteration-" + str(it_num) + ".txt"
+        #    next_load = open(next, 'w')
+        #    data = prev_load.read()
+        #    next_load.write(data)
+        #    prev_load.close()
+        #    next_load.close()
+        #    if doprint:
+        #        printout('Iteration %d did not need lambda correction.', it_num)
     
     # Retrieve most recent interation values
-    if fin_iter2:
-        input_new = fin_iter2
-    else:
-        infile = datadir + '/lagrange-iteration-' + str(it_num) + '.txt'
-        input_new = form.readoutput(infile)
+    #if fin_iter2:
+    input_new = fin_iter2
+    #else:
+    #    infile = datadir + '/lagrange-iteration-' + str(it_num) + '.txt'
+    #    input_new = form.readoutput(infile)
     
     x_new     = input_new[4]
     x_bar_new = input_new[7]
@@ -240,7 +238,7 @@ while repeat:
         delta_bar = x_bar_new - x_bar
         form.output_results(datadirr, header, it_num, speclist, x, x_new, delta, x_bar, x_bar_new, delta_bar, doprint)
         form.fancyout_results(datadirr, header, it_num, speclist, x, x_new, delta, x_bar, x_bar_new, delta_bar, pressure, temp, doprint)
-        form.cleanup(datadir, it_num+1, clean)
+        #form.cleanup(datadir, it_num+1, clean)
 
     elif it_num < maxiter: 
         # Precision is not met, max iteration not met
@@ -259,6 +257,6 @@ while repeat:
         delta_bar = x_bar_new - x_bar
         form.output_results(datadirr, header, it_num, speclist, x, x_new, delta, x_bar, x_bar_new, delta_bar, doprint)
         form.fancyout_results(datadirr, header, it_num, speclist, x, x_new, delta, x_bar, x_bar_new, delta_bar, pressure, temp, doprint)
-        form.cleanup(datadir, it_num+1, clean)
+        #form.cleanup(datadir, it_num+1, clean)
 
 # End of file

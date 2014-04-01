@@ -26,7 +26,7 @@ datadir = 'outputs/' + argv[1:][1]
 if not os.path.exists(datadir): os.makedirs(datadir)
 
 # Read in values from header file
-pressure, temp, i, j, speclist, a, b, c = form.readheader(header, dex)
+pressure, temp, i, j, speclist, a, b, c = form.readheader(header)
 
 if doprint:
     print("b values: " + str(b))
@@ -64,7 +64,7 @@ for n in np.arange(i - j + 1):
 
 
 # Seek proper inputs to allow only positive initial values
-scale = 1e-1
+scale = 1e1
 nofit = True
 
 while nofit:

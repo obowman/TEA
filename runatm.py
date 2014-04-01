@@ -117,20 +117,20 @@ for q in np.arange(n_runs)[1:]:
         ini = time.time()
     
     # Get balanced initial guess for this line
-    if testbool:
-        print("Guess Testing")
-        if q > 1:
-            #print(desc)
-            #print(q)
-            #print(out_dir + single_res[0])
-            #print(out_dir + "Previous_Result.txt")
-            #print(loc_outputs + "lagrange-iteration-0.txt")
-            if not os.path.exists(loc_outputs): os.makedirs(loc_outputs)
-            shutil.copy(out_dir + "Previous_Result.txt", loc_outputs + "lagrange-iteration-0.txt")
-        else:
-            subprocess.call([loc_balance, loc_headerfile, desc, str(doprint)], shell = inshell)
-    else:
-        subprocess.call([loc_balance, loc_headerfile, desc, str(doprint)], shell = inshell)
+    #if testbool:
+    #    print("Guess Testing")
+    #    if q > 1:
+    #       print(desc)
+    #       print(q)
+    #       print(out_dir + single_res[0])
+    #       print(out_dir + "Previous_Result.txt")
+    #       print(loc_outputs + "lagrange-iteration-0.txt")
+    #        if not os.path.exists(loc_outputs): os.makedirs(loc_outputs)
+    #        shutil.copy(out_dir + "Previous_Result.txt", loc_outputs + "lagrange-iteration-0.txt")
+    #    else:
+    #        subprocess.call([loc_balance, loc_headerfile, desc, str(doprint)], shell = inshell)
+    #else:
+    subprocess.call([loc_balance, loc_headerfile, desc, str(doprint)], shell = inshell)
         
     if times:
         fin = time.time()
@@ -154,8 +154,8 @@ for q in np.arange(n_runs)[1:]:
     
     fout.write('\n')
     
-    if testbool:
-        shutil.copy(out_dir + single_res[0], out_dir + "Previous_Result.txt")
+    #if testbool:
+    #    shutil.copy(out_dir + single_res[0], out_dir + "Previous_Result.txt")
     
     
     # ### Perserve or delete intermediate files

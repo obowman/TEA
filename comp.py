@@ -1,11 +1,107 @@
+'''
+comp.py
+
+============
+Description
+============
+
+     Species counting function in order to count the number of each element 
+  in a chemical species.  Takes in a string of a chemical species (i.e., "H2O") 
+  and returns an array containing every element with corresponding counts found 
+  in that species.
+
+
+============
+Inputs
+============
+
+specie : string :
+      Chemical species in the format "atomic symbol, count, etc" such that the 
+  number of counts is always directly following the corresponding atomic symbol.
+  'specie' string can contain redundancies, but not parantheses. Names should 
+  match the "JCODE" formulas listed in the NIST JANAF Tables listed at: 
+                     kinetics.nist.gov/janaf/formula.html
+
+      If 'specie' is "NOUSE", function will return an array of all 0 counts.
+
+
+============
+Outputs
+============
+
+elements : 2D array :
+      Array containing three columns of equal length: the first column is a 
+    full list of all elements' atomic numbers from deuterium (#0) up to 
+    copernicium (#112), the second column contains the corresponding atomic 
+    symbol, and the third column counts of each of these elements found in the
+    input species.
+
+
+============
+Examples
+============
+
+>>> from comp import comp
+>>> species = "H2O"        # water 'JCODE'
+>>> comp(species)
+array([[0, D, 0],
+       [1, H, 2],
+       [2, He, 0],
+       [3, Li, 0],
+       [4, Be, 0],
+       [5, B, 0],
+       [6, C, 0],
+       [7, N, 0],
+       [8, O, 1],
+       ...
+       [112, Cn, 0]], dtype=object)
+>>>
+>>> species = "C2N2" # Ethanedinitrile 'JCODE'
+>>> comp("C2N2")
+array([[0, D, 0],
+       [1, H, 0],
+       [2, He, 0],
+       [3, Li, 0],
+       [4, Be, 0],
+       [5, B, 0],
+       [6, C, 2],
+       [7, N, 2],
+       ...
+       [112, Cn, 0]], dtype=object)
+>>>
+>>> species = "C1C2C3" # Dummy example
+>>> comp(species)
+array([[0, D, 0],
+       [1, H, 0],
+       [2, He, 0],
+       [3, Li, 0],
+       [4, Be, 0],
+       [5, B, 0],
+       [6, C, 6],
+       [7, N, 0],
+       ...
+       [112, Cn, 0]], dtype=object)
+>>>
+
+
+============
+Revisions
+============
+
+v1.0.0 | 2014-04-01 | bowman@knights.ucf.edu | Updated documentation.
+v1.0.0 | 2013-02-13 | bowman@knights.ucf.edu | Added full functionality for JCODE.
+v0.0.1 | 2013-02-05 | bowman@knights.ucf.edu | Initial version.
+'''
+
+
 import re
 import numpy as np
 
-# This gets the elemental weight of each element in the specie. Only works up to Mo (JANAF limit)
+# This gets the elemental weight of each element in the specie. Uses JCODE 
+# species values given from NIST JANAF tables, linked in description.
 def comp(specie):
-    '''
-    DESC HERE
-    '''
+    # List of each atomic species' symbols.  Start with deuterium, end with 
+    # copernicium.
     symbols = np.array([
     'D',
     'H',
@@ -120,16 +216,21 @@ def comp(specie):
     'Ds',
     'Rg',
     'Cn' ])
+    
+    # Count elements
     n_ele = np.size(symbols)
     
+    # Create 2D array containing all symbols, atomic numbers, and counts
     elements = np.empty((n_ele, 3), dtype=np.object)
     elements[:, 0] = np.arange(n_ele)
     elements[:, 1] = symbols
     elements[:, 2] = 0
     
+    # Scenario for returning empty array
     if specie == 'NOUSE':
         return elements
     
+    # Begin counting elements in string
     chars = len(specie)
     iscaps  = np.empty(chars, dtype=np.bool)
     isdigit = np.empty(chars, dtype=np.bool)
@@ -137,6 +238,7 @@ def comp(specie):
         iscaps[i] = (re.findall('[A-Z]', specie[i]) != [])
         isdigit[i] = specie[i].isdigit()
     
+    # Circumstances for ending each count
     endele = True
     result = [[]]
     for i in np.arange(len(specie)):

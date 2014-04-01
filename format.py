@@ -6,8 +6,11 @@ from ast import literal_eval
 from sys import argv
 from sys import stdout
 
-#print('Format imports...')
+from TEA_config import *
 
+#print('Format imports...')
+global multiplier
+multiplier = abun_scale
 
 #errorprint = literal_eval(argv[1:][0])
 
@@ -27,7 +30,7 @@ from sys import stdout
 # fancyout_results: Same as fancyout, but for the final results.
 
 
-def readheader(file, dex=False):
+def readheader(file):
     '''
     DESC
     '''
@@ -60,11 +63,6 @@ def readheader(file, dex=False):
     j = a.shape[1]
     f.close()
     
-    if dex:
-        b_10 = 10**np.array(b)
-        b    = np.array((b_10 / np.sum(b_10)).tolist())
-    # FINDME: Testing for initial number of moles times b
-    multiplier = 1
     b = (np.array(b) * multiplier).tolist()
     
     return pressure, temp, i, j, speclist, a, b, c
@@ -389,7 +387,7 @@ def fancyout_results(datadir, header, it_num, speclist, y, x, delta, y_bar, x_ba
 
 def cleanup(datadir, it_num, clean):
     """
-    DOC
+    Not currently used, preserved for posterity.
     """
     if (it_num >= 2) & (clean):
         #print('Removing ' + str(it_num-1))
@@ -403,6 +401,9 @@ def cleanup(datadir, it_num, clean):
             os.remove(datadir + "/lagrange-iteration-" + np.str(it_num-1) + "-NOUSE.txt")
 
 def printout(str, it_num = False):
+    '''
+    Used to print iteration progress number.
+    '''
     stdout.write('\r\n')
     if np.bool(it_num):
         stdout.write(str % it_num)
@@ -410,6 +411,7 @@ def printout(str, it_num = False):
         stdout.write(str)
     stdout.flush()
 
+'''
 def output_atm():
     header      = "# This is a NO-USE pre-TEA atmosphere file.\n\
 # TEA accepts a file in this format to produce \n\
@@ -439,4 +441,5 @@ def output_atm():
         f.write('\n')
         
     f.close()
+'''
 #END

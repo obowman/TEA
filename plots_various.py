@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+
 import numpy as np
 import matplotlib.pyplot as plt
 import os
@@ -9,8 +11,10 @@ import os
 
 dir = os.getcwd()
 
-filename = '/results/NewStartTest3/NewStartTest3.dat'
-T, CO, CH4, H2O, N2, NH3 = np.loadtxt(dir + filename, dtype=float, comments='#', delimiter=None, converters=None, skiprows=13, usecols=(2, 8, 9, 10, 11, 12), unpack=True, ndmin=0)
+atmname = "Compares_ExplFalse_100i_20l_30s_full"
+
+filename = '/results/' + atmname + '/' + atmname + '.dat'
+T, CO, CH4, H2O, N2, NH3 = np.loadtxt(dir + filename, dtype=float, comments='#', delimiter=None, converters=None, skiprows=13, usecols=(2, 8, 9, 10, 11, 12), unpack=True)
 
 plt.ion()
 plt.figure(1)
@@ -19,19 +23,20 @@ plt.clf()
 # H2O condensate below 273 K
 H2O[T < 273] = 1e-50
 
-plt.plot(T, np.log10(CO ), 'r-', label="Explore")
-plt.plot(T, np.log10(CH4), '-', color = 'k')
-plt.plot(T, np.log10(H2O), '-', color = 'cyan')
-plt.plot(T, np.log10(N2 ), '-', color = 'g')
-plt.plot(T, np.log10(NH3), '-', color = 'b')
 
-plt.title('NewStartTest3', fontsize=14)
+plt.plot(T, np.log10(CO ), 'r-', label="CO")
+plt.plot(T, np.log10(CH4), '-', color = 'k', label="CH4")
+plt.plot(T, np.log10(H2O), '-', color = 'cyan', label="H2O")
+plt.plot(T, np.log10(N2 ), '-', color = 'g', label="N2")
+plt.plot(T, np.log10(NH3), '-', color = 'b', label="NH3")
+
+plt.title(atmname, fontsize=14)
 plt.xlabel('T [K]'                  , fontsize=14)
 plt.ylabel('log10 Mixing Fraction' , fontsize=14)
-plt.legend(loc='lower center', prop={'size':10})
+plt.legend(loc='upper center', prop={'size':10}, ncol = 5)
 plt.ylim(-10, -2)
 plt.xlim(100, 3000)
-plt.savefig("NewStartTest(withoutnew)")
+plt.savefig(atmname)
 '''
 
 

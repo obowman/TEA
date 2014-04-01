@@ -14,22 +14,23 @@ import numpy as np
 import format as form
 from TEA_config import *
 
-def lambdacorr(it_num, datadir, doprint, direct=False, dex=False):
+def lambdacorr(it_num, datadir, doprint, direct=False):
     '''
     DOCSTRING
     '''
-    
-    #np.seterr(all='ignore')
-    infile = datadir + '/lagrange-iteration-' + str(it_num) + '-nocorr.txt'
+    # Supress nan warnings, as they are used for finding valid minima
+    np.seterr(invalid='ignore')
+    np.seterr(divide='ignore')
     
     # Read in values from header and previous non-corrected output
-    if bool(direct):
-        input = direct
-    else:
-        input = form.readoutput(infile)
+    #if bool(direct):
+    input = direct
+    #else:
+    #    infile = datadir + '/lagrange-iteration-' + str(it_num) + '-nocorr.txt'
+    #    input = form.readoutput(infile)
     
     header = input[0]
-    pressure, temp, i, j, speclist, a, b, g_RT = form.readheader(header, dex)
+    pressure, temp, i, j, speclist, a, b, g_RT = form.readheader(header)
    
     y         = input[3]
     x         = input[4]
@@ -110,7 +111,8 @@ def lambdacorr(it_num, datadir, doprint, direct=False, dex=False):
         rev_range = range[::-1]
         for h in rev_range:
             val = dF_dlam(h, i, x, y, delta, c, x_bar, y_bar, delta_bar)
-            if val > 0 or np.isnan(val) == False:
+            #if val > 0 or np.isnan(val) == False:
+            if val < 0 and np.isnan(val) == False:
                 break
             old_val = val # val before stopping
             old_lam = h   # lam before stopping
@@ -193,12 +195,15 @@ def lambdacorr(it_num, datadir, doprint, direct=False, dex=False):
     
     #print("Previous y's:", y + old_lam * delta)
     #print("Good y's", y + out_lam * delta)
-    # Export all values into output files or via memory    
-    if direct:
-        return [header, it_num, speclist, y, x_corr, delta_corr, y_bar, x_corr_bar, delta_corr_bar, doprint]
-    else:
-        form.output(datadir, header, it_num, speclist, y, x_corr, delta_corr, y_bar, x_corr_bar, delta_corr_bar, doprint)
-        form.fancyout(datadir, it_num, speclist, y, x_corr, delta_corr, y_bar, x_corr_bar, delta_corr_bar, doprint)
-        return False
+    
+    # Export all values into output files or via memory
+    #TESTING: ALWAYS WRITE FILES
+    form.output(datadir, header, it_num, speclist, y, x_corr, delta_corr, y_bar, x_corr_bar, delta_corr_bar, doprint)
+    form.fancyout(datadir, it_num, speclist, y, x_corr, delta_corr, y_bar, x_corr_bar, delta_corr_bar, doprint)
+        
+    #if direct:
+    return [header, it_num, speclist, y, x_corr, delta_corr, y_bar, x_corr_bar, delta_corr_bar, doprint]
+    #else:
+    #    return False
     
 # End of file

@@ -16,7 +16,7 @@ from sympy.solvers import solve
 
 import format as form
 
-def lagrange(it_num, datadir, doprint, direct=False, dex=False):
+def lagrange(it_num, datadir, doprint, direct):
     '''
     DOCSTRING
     '''
@@ -24,13 +24,13 @@ def lagrange(it_num, datadir, doprint, direct=False, dex=False):
     infile = datadir + '/lagrange-iteration-' + np.str(it_num - 1) + '.txt'
     
     # Read in values from header.txt and previous output
-    if direct:
-        input = direct
-    else:
-        input = form.readoutput(infile)
+    #if direct:
+    input = direct
+    #else:
+    #    input = form.readoutput(infile)
     
     header = input[0]
-    pressure, temp, i, j, speclist, a, b, g_RT = form.readheader(header, dex)
+    pressure, temp, i, j, speclist, a, b, g_RT = form.readheader(header)
     
     y     = input[4] # 'x' in output file, using final values as new initials
     y_bar = input[7] # see above
@@ -172,12 +172,14 @@ def lagrange(it_num, datadir, doprint, direct=False, dex=False):
     delta = x - y
     delta_bar = x_bar - y_bar
     
-    # Export all values into output files or via memory    
-    if direct:
-        return [header, it_num, speclist, y, x, delta, y_bar, x_bar, delta_bar]
-    else:
-        form.output_nocorr(datadir, header, it_num, speclist, y, x, delta, y_bar, x_bar, delta_bar, doprint)
-        form.fancyout_nocorr(datadir, it_num, speclist, y, x, delta, y_bar, x_bar, delta_bar, doprint)
-        return False
+    # Export all values into output files or via memory 
+    #TESTING: ALWAYS WRITE FILES
+    form.output_nocorr(datadir, header, it_num, speclist, y, x, delta, y_bar, x_bar, delta_bar, doprint)
+    form.fancyout_nocorr(datadir, it_num, speclist, y, x, delta, y_bar, x_bar, delta_bar, doprint)
+       
+    #if direct:
+    return [header, it_num, speclist, y, x, delta, y_bar, x_bar, delta_bar]
+    #else:
+    #    return False
         
 # End of file

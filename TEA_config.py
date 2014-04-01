@@ -11,36 +11,35 @@ exp       =  40  # (Def: 40) Decimal digit to limit mole fraction
                  #   precision on if forceiter = False. Not working
                  #   as intended.
                  
-testbool = False
-
 # ### Change below to control output files / displays
 doprint = False # (Def: False) Enable various debug printouts 
 times   = False # (Def: False) Enable time printing for speed tests 
 
-save_headers = True # (Def: False) Preserve headers for multi-TP 
+save_headers = False # (Def: False) Preserve headers for multi-TP 
                     #   pre-atm files 
-save_outputs = True# (Def: False) Preserve intermediate outputs for 
-                    #   multi-TP pre-atm files 
-clean        = True # (Def: True) Erase any intermediate files made 
-                    #   after production
-nofile       = True # (Def: True) Use main loop using no intermediate
-                    #   files created
+save_outputs = True # (Def: False) Preserve intermediate outputs for 
+                    #   multi-TP pre-atm files
 
-# ########################
-# DEBUGGING BOOLEANS BELOW
+# ### Change below to control lambda correction method
+explore = False  # Allow for lambda exploration (smart find, two directions)
+lower   = -20    # lowest exponent for lambda array
+steps   =  30    # Steps in lambda array
 
-explore = True  # Allow for lambda exploration (smart find)
-lower   = -100   # lowest exponent for lambda array
-steps   = 50   # Steps in lambda array
-
-# ### DEGRADED, DO NOT CHANGE FOR NOW
-dex     = False
+abun_scale = 1  # (Def: 1) Multiplicative scaling for mole numbers.  
+                 # Use values >= 10 if TEA reports inconsistent abundances 
+                 # at low temperatures.
 
 # ########################################################## #
 # ############## DO NOT EDIT BELOW THIS POINT ############## #
 # ########################################################## #
-#if (save_headers or save_outputs):
-#    clean  = False
-#    nofile = False
 
-# End of file
+# ########################
+# ### DEPRECATED, DO NOT CHANGE FOR NOW
+#nofile  = True # (Def: True) Use main loop using no intermediate
+                    #   files created
+#clean        = False # (Def: True) Erase any intermediate files made 
+                    #   after production
+#testbool = False # Proven no effect...
+
+
+
