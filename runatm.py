@@ -48,7 +48,7 @@ if times:
     print("runatm.py imports:  " + str(elapsed))
 
 # Retrieve atm file
-infile  = argv[1:][0]# + '.dat'
+infile  = argv[1:][0]
 desc    = argv[1:][1]
 
 # Set up locations of necessary scripts and directories of files
@@ -86,11 +86,11 @@ for i in np.arange(np.size(spec_list)):
     fout.write(spec_list[i].rjust(10)+' ')
 fout.write('\n')
 
-# Time / speed testing
+# Retrieve pre-loop runtime
 if times:
     new = time.time()
     elapsed = new - end
-    print("pre-science:        " + str(elapsed))
+    print("pre-loop:           " + str(elapsed))
 
 # Detect operating system for multi-processor support
 if os.name == 'nt': inshell = True    # Windows
@@ -117,21 +117,9 @@ for q in np.arange(n_runs)[1:]:
         ini = time.time()
     
     # Get balanced initial guess for this line
-    #if testbool:
-    #    print("Guess Testing")
-    #    if q > 1:
-    #       print(desc)
-    #       print(q)
-    #       print(out_dir + single_res[0])
-    #       print(out_dir + "Previous_Result.txt")
-    #       print(loc_outputs + "lagrange-iteration-0.txt")
-    #        if not os.path.exists(loc_outputs): os.makedirs(loc_outputs)
-    #        shutil.copy(out_dir + "Previous_Result.txt", loc_outputs + "lagrange-iteration-0.txt")
-    #    else:
-    #        subprocess.call([loc_balance, loc_headerfile, desc, str(doprint)], shell = inshell)
-    #else:
     subprocess.call([loc_balance, loc_headerfile, desc, str(doprint)], shell = inshell)
-        
+    
+    # Retrieve balace runtime
     if times:
         fin = time.time()
         elapsed = fin - ini
@@ -152,11 +140,7 @@ for q in np.arange(n_runs)[1:]:
         cur_abn = x[i] / x_bar
         fout.write('%1.4e'%cur_abn + ' ')
     
-    fout.write('\n')
-    
-    #if testbool:
-    #    shutil.copy(out_dir + single_res[0], out_dir + "Previous_Result.txt")
-    
+    fout.write('\n')    
     
     # ### Perserve or delete intermediate files
     # Save / remove headers

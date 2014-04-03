@@ -103,6 +103,19 @@ def lambdacorr(it_num, datadir, doprint, direct=False):
             if val > 0 or np.isnan(val) == True:
                 break
             lam = h
+            
+            # CALCULATE AND CHECK GIBBS ENERGY VALUE
+            x_corr = y + lam * delta
+            x_corr_bar = np.sum(x_corr)
+            delta_corr = y - x_corr
+            delta_corr_bar = x_corr_bar - y_bar
+            fi_y = np.zeros(i)
+            for n in np.arange(i):
+                y_frac  = np.float(y[n] / y_bar)
+                fi_y[n] = y[n] * ( c[n] + np.log(y_frac) )
+            print(sum(fi_y))
+            
+            
             start = False
         return lam
     
@@ -111,7 +124,6 @@ def lambdacorr(it_num, datadir, doprint, direct=False):
         rev_range = range[::-1]
         for h in rev_range:
             val = dF_dlam(h, i, x, y, delta, c, x_bar, y_bar, delta_bar)
-            #if val > 0 or np.isnan(val) == False:
             if val < 0 and np.isnan(val) == False:
                 break
             old_val = val # val before stopping

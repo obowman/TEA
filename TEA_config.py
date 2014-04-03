@@ -3,7 +3,7 @@
 #  in-line testing / modifications.
 
 # ### Change below to control how TEA runs
-maxiter   = 100  # (Def: 100) Iteration each TP should stop at. More 
+maxiter   = 3  # (Def: 100) Iteration each TP should stop at. More 
                  #   iterations ensure more accurate results but will 
                  #   increase calculation time
 forceiter = True # (Def: True) Force TEA to perform all iterations 
@@ -25,7 +25,7 @@ explore = False  # Allow for lambda exploration (smart find, two directions)
 lower   = -20    # lowest exponent for lambda array
 steps   =  30    # Steps in lambda array
 
-abun_scale = 1  # (Def: 1) Multiplicative scaling for mole numbers.  
+abun_scale = 10  # (Def: 1) Multiplicative scaling for mole numbers.  
                  # Use values >= 10 if TEA reports inconsistent abundances 
                  # at low temperatures.
 
