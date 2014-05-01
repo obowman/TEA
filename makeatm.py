@@ -14,20 +14,43 @@ Quick assumptions:
 
 import numpy as np
 
-# User inputs
-spec        = "C H O N"        # Atomic label for input abundances
-solids      = True
-#pres_erange = (-5, 2)          # Range for exponents on pressure
-steps       = 100               # Number of steps in pressure
-TP_params   = [1, 2, 3, 4, 5, 
-               6, 7, 8, 9, 0]  # Dummy TP profile params
-T           = np.linspace(100, 3000, steps)
-fillers     = '''\n# FILLER STUFF HERE\n'''                   # Filler to save space
-filename    = 'TEBS-Solids-after.dat'   # Output atm file name
+# ### User inputs ### #
+
+filename    = 'Example.dat'   # Output atm file name
+
+# Names for input elements must be simple atomic labels, and names for
+#  output species must match those produced by readJANAF.py
+in_elem     = "C H O N"        # Atomic label for input abundances
+out_spec    = "H_g C_g N_g O_g H2_ref CO_g CH4_g H2O_g N2_ref NH3_g"   
+                               # List of output species 
+               
+steps       = 100               # Number of steps in radius, pressure, and temperature               
+rad         = np.linspace( 1e4,    1, steps)
+pres        = np.logspace(  -5,    0, steps)
+temp        = np.linspace( 100, 3000, steps)
+
+# Optional data insertions
+TP_params   = "# T-P profile parameters can go here."  # Dummy TP profile params
+fillers     = "# ANY FILLER  \n\
+# DATA CAN    \n\
+# BE INJECTED \n\
+# IN THIS AREA"  # Filler to save space
+               
 abun        = 'abundances.txt' # Input abundances (solar for this case)
-header      = "# This is a NO-USE pre-TEA atmosphere file.\n\
-# TEA accepts a file in this format to produce \n\
-# abundances as a function of pressure and temperature.\n\n"
+header      = "\'\'\'                               \n\
+This is a TEA pre-atmosphere input file.             \n\
+                                                     \n\
+TEA accepts a file in this format to produce molar   \n\
+abundances as a function of pressure and temperature.\n\
+Any non-TEA data may be added anywhere in the file   \n\
+preceding the \"#FINDTEA\" marker.                  \n\
+                                                     \n\
+Output species must be added in the line immediately \n\
+following the \"#FINDSPEC\" marker and must be named \n\
+to match those produced by readJANAF.py.             \n\
+\'\'\'"
+
+solids      = False # FINDME: Correction for H2O condensation
 
 # read abundance data
 f = open(abun, 'r')
@@ -40,44 +63,36 @@ abundata = np.asarray(abundata)
 f.close()
 
 # Trim abundata to the stuff we care about
-spec   = spec.split(" ")
-nspec  = np.size(spec)
+in_elem   = in_elem.split(" ")
+nspec  = np.size(in_elem)
 lookat = np.zeros(abundata.shape[0], dtype=bool)
 
 for i in np.arange(nspec):
-    lookat += (abundata[:,1] == spec[i])
+    lookat += (abundata[:,1] == in_elem[i])
 
 abun_trim = abundata[lookat]
 
 # Also read Si abundance (For Burrows Sharp 1999 quick fix)
 Si_abun = (abundata[:,1] == 'Si')
 
-# Get pressure range
-#l, u = pres_erange[0], pres_erange[1]
-rad  = np.arange(steps)[::-1] * 1000
-#pres = np.logspace(l, u, steps)
-pres = np.ones(steps)
-temp = np.ones(steps) * T
-
 # Create array that will be in output atm file...
-out_spec = abun_trim[:,1].tolist()
+out_elem = abun_trim[:,1].tolist()
 out_dex  = abun_trim[:,2].tolist()
 print(out_dex)
 out_dex  = map(float, abun_trim[:,2])
 out_num  = 10**np.array(out_dex)
 out_abn  = (out_num / np.sum(out_num)).tolist()
 
-#Implimenting solid quick fix Burrows Sharp 1999
+# Implimenting solid quick fix Burrows Sharp 1999
 Si_frac = 10**Si_abun[0] / np.sum(out_num)
 
 for n in np.arange(np.size(out_abn)):
     out_abn[n] = str('%1.10e'%out_abn[n])
 
-    
-out = [['    Radius'] + ['Pressure'] + ['Temp'] + out_spec]
 
-#new_abn = np.copy(out_abn)
-#print(new_abn)
+out = [['    Radius'] + ['Pressure'] + ['Temp'] + out_elem]
+
+
 
 
 for i in np.arange(steps):
@@ -98,11 +113,10 @@ print(out_abn)
 # Save to dummy atm file
 f = open(filename, 'w+')
 
-f.write(header)
-f.write(str(TP_params).strip('[]') + '\n')
-f.write(fillers + '\n')
-f.write('#FINDSPEC\n\
-H_g C_g N_g O_g H2_ref CO_g CH4_g H2O_g N2_ref NH3_g\n\n')
+f.write(header + '\n\n')
+f.write(TP_params  + '\n\n')
+f.write(fillers    + '\n\n')
+f.write('#FINDSPEC\n' + out_spec + '\n\n')
 f.write('#FINDTEA\n')
 for i in np.arange(steps + 1):
     # Radius list
@@ -116,7 +130,7 @@ for i in np.arange(steps + 1):
     
     # Dex abun list
     for j in np.arange(nspec):
-        f.write(out[i][j+3].rjust(10)+' ')
+        f.write(out[i][j+3].rjust(16)+' ')
     f.write('\n')
     
 f.close()
